@@ -1,0 +1,141 @@
+<template >
+    <div >
+
+        <v-navigation-drawer app >
+            <v-list-item >
+                <v-list-item-content >
+                    <v-list-item-title class="title" >
+                        Sushi Crorparation
+                    </v-list-item-title >
+                    <v-list-item-subtitle >
+
+                    </v-list-item-subtitle >
+                </v-list-item-content >
+            </v-list-item >
+
+            <v-divider ></v-divider >
+
+            <v-list
+                    dense
+                    nav
+            >
+                <v-list-item
+                        v-for="item in items"
+                        :key="item.title"
+                        link
+                        :to="item.route"
+                >
+                    <v-list-item-icon >
+                        <v-icon v-text="item.icon"></v-icon>
+
+                    </v-list-item-icon >
+
+                    <v-list-item-content >
+                        <v-list-item-title >{{ item.title }}</v-list-item-title >
+                    </v-list-item-content >
+                </v-list-item >
+            </v-list >
+            <v-col cols="4" >
+                <v-btn color="primary" class="px-10"  @click="exit()" >Выход</v-btn >
+            </v-col >
+        </v-navigation-drawer >
+
+        <v-app-bar app >
+            <!-- -->
+        </v-app-bar >
+
+        <!-- Sizes your content based upon application components -->
+        <v-content >
+
+            <!-- Provides the application the proper gutter -->
+            <v-container fluid >
+
+                <!-- If using vue-router -->
+                <router-view >
+
+                </router-view >
+            </v-container >
+        </v-content >
+
+        <v-footer app >
+            <!-- -->
+        </v-footer >
+    </div >
+</template >
+
+<script >
+    export default {
+        name: "cabinet",
+        beforeCreate:()=>{
+            if (localStorage.getItem('token') !== null){
+
+            } else {
+
+                window.location = "/login"
+                this.$router.push('/login')
+            }
+
+        },
+        data: () => ({
+            items: [
+                {
+                    title: 'Оборудование',
+                    icon: 'local_laundry_service',
+                    route:'/'
+                },
+                {
+                    title: "Добавить оборудование",
+                    icon: '',
+                    route:'/equipment/create'
+                },
+                {
+                    title: "Ремонт",
+                    icon: 'mdi-auto-fix',
+                    route:'/repair'
+                },
+                {
+                    title: "Создать ремонт",
+                    icon: '',
+                    route:'/repair/create/'
+                },
+                {
+                    title: "Перемещения",
+                    icon: 'mdi-transfer',
+                    route:'/transfer'
+                },
+                {
+                    title: "Создать перемещение",
+                    icon: '',
+                    route:'/transfer/create/'
+                },
+                {
+                    title: "Настройки",
+                    icon: 'settings_applications',
+                    route:'/settings'
+                },
+
+                // {
+                //     title: "Создать класс оборудования",
+                //     icon: '',
+                //     route:'/class/create'
+                // },
+                // {
+                //     title: "Создать тип оборудования",
+                //     icon: '',
+                //     route:'/type/create'
+                // },
+
+            ]
+        }),
+        methods:{
+            exit() {
+                delete localStorage.token;
+                this.$router.push('/login')
+            }
+        }
+    }
+</script >
+
+<style scoped >
+
+</style >
