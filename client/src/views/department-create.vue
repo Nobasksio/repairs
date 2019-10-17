@@ -18,6 +18,9 @@
 
                         </v-text-field >
                     </v-col >
+                    <v-col class="pt-7" v-if="load">
+                        Единицы оборудования: {{ count_eq }} шт.
+                    </v-col>
                     <!--<v-col cols="4" >-->
                         <!--<v-file-input-->
                                 <!--class="d-none"-->
@@ -45,6 +48,7 @@
                         ></v-autocomplete>
                     </v-col>
                 </v-row>
+
                 <v-row class="mt-n6 mb-n3" >
                     <v-col cols="" >
                     <v-alert type="success"
@@ -72,6 +76,8 @@
                                 v-if="load"
                                 entity_name_ru="Подразделение"
                                 entity_name_eng="department"
+                                :check_data="count_eq > 0"
+                                check_text="Перед тем как удалять подразделение переместите с него все оборудование"
                                 :want_delete_id="department.id"
                                 go_to="settings"
                         ></deleteButton>
@@ -103,7 +109,9 @@
                 succ_alert:false,
                 error_alert:false,
                 departments:[],
+
                 val_name:false,
+                count_eq:0,
                 components:[{name:'мяу',id:1},{name:'гав',id:2}],
                 department:{
                     name:'',
@@ -129,6 +137,7 @@
                 axios.get('/api/department/'+this.$route.params.id )
                     .then((response)=> {
                         this.department = response.data.department
+                        this.count_eq = response.data.count_eq
                     })
                     .catch((error)=> {
                         console.log(error);

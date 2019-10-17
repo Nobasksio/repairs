@@ -2,7 +2,7 @@
     <div >
 
         <h1 class="display-1" >Создание ремонта</h1 >
-        <v-form v-model="valid"  >
+        <v-form v-model="valid" >
 
             <v-container class="px-4 py-4 align-self-start ml-0" >
                 <v-row >
@@ -12,38 +12,39 @@
                                 v-model="search_name"
                                 label="Название"
                                 placeholder="например Чайник"
-                                :items="equipments"
+                                :items="filter_equipments"
                                 item-text="name"
                                 :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                 item-value="id"
                                 outlined
                                 class="mr-2 mb-0"
                         >
-                            <template v-slot:item="data">
-                                <template>
-                                    <v-list-item-content>
-                                        <v-list-item-title v-html="data.item.name"></v-list-item-title>
-                                        <v-list-item-subtitle v-html="(getDepartment(data.item.department_id)).name"></v-list-item-subtitle>
-                                    </v-list-item-content>
-                                </template>
-                            </template>
-                        </v-autocomplete>
+                            <template v-slot:item="data" >
+                                <template >
+                                    <v-list-item-content >
+                                        <v-list-item-title v-html="data.item.name" ></v-list-item-title >
+                                        <v-list-item-subtitle
+                                                v-html="(getDepartment(data.item.department_id)).name" ></v-list-item-subtitle >
+                                    </v-list-item-content >
+                                </template >
+                            </template >
+                        </v-autocomplete >
                     </v-col >
                     <v-col cols="4" >
                         <v-autocomplete
                                 v-model="search_in_number_uniq"
                                 label="внутренний инвентарный номер"
                                 placeholder="например 12345"
-                                :items="equipments"
+                                :items="filter_equipments"
                                 item-text="in_number_uniq"
                                 :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                 item-value="id"
                                 outlined
                                 class="mr-2 mb-0"
-                        ></v-autocomplete>
+                        ></v-autocomplete >
                     </v-col >
                     <!--<v-col class="mt-2" >-->
-                        <!--<v-btn color="primary" @click="" >найти</v-btn >-->
+                    <!--<v-btn color="primary" @click="" >найти</v-btn >-->
                     <!--</v-col >-->
                 </v-row >
                 <v-row >
@@ -51,14 +52,20 @@
                         <v-autocomplete
                                 label="Подразделение"
                                 :items="departments"
-                                v-model="repairs.equipment.department_id"
-                                :rules="[v => !!v || 'Подразделение не может быть пустым']"
+                                v-model="filter.department"
+
                                 item-text="name"
-                                readonly
                                 item-value="id"
                                 outlined
                         ></v-autocomplete >
                     </v-col >
+                    <v-col>
+                        <v-btn color="primary" class="mt-1"
+                               v-if="filter.department != null"
+                               large @click="clean()" >очистить
+                        </v-btn >
+                    </v-col>
+
                 </v-row >
                 <v-row >
                     <v-col cols="12" md="8" >
@@ -190,7 +197,8 @@
                     <v-col cols="4" >
                         <v-btn color="primary" class="m-2"
                                :disabled="loading || !valid"
-                               large @click="create_repair()" >Сохранить</v-btn >
+                               large @click="create_repair()" >Сохранить
+                        </v-btn >
                     </v-col >
                 </v-row >
             </v-container >
@@ -207,20 +215,23 @@
                 modal: false,
                 menu: false,
                 menu2: false,
-                succ_alert:false,
-                error_alert:false,
+                succ_alert: false,
+                error_alert: false,
                 search_name: null,
                 search_in_number_uniq: null,
-                loading:false,
-                valid:false,
-                departments:[],
-                equipments:[],
-                providers:[],
+                loading: false,
+                valid: false,
+                filter: {
+                    department: null,
+                },
+                departments: [],
+                equipments: [],
+                providers: [],
                 repairs: {
-                    id:null,
+                    id: null,
                     equipment: {},
                     description: null,
-                    isWarranty:false,
+                    isWarranty: false,
                     date_start: new Date().toISOString().substr(0, 10),
                     date_finish: null,
                     warranty_photo: [],
@@ -253,14 +264,14 @@
             },
             create_repair() {
                 axios.post('/api/repair', {repair: this.repairs})
-                    .then((response)=> {
+                    .then((response) => {
                         console.log(response);
                         this.error_alert = false
                         this.succ_alert = true
 
                         this.repairs.id = response.data.id
                     })
-                    .catch((error)=> {
+                    .catch((error) => {
                         this.succ_alert = false
                         this.error_alert = true
                         console.log(error);
@@ -272,15 +283,21 @@
                 our_department = this.departments.filter((item) => {
                     return item.id == department_id
                 })
-                if (our_department.length == 0){
-                    our_department = [{name:'подразделение удалено'}]
+                if (our_department.length == 0) {
+                    our_department = [{name: 'подразделение удалено'}]
                 }
 
                 return our_department[0]
             },
+            clean(){
+                this.filter.department = null
+                this.repairs.equipment = {}
+                this.search_name = null
+                this.search_in_number_uniq = null
+            }
         },
-        watch:{
-            search_name: function(val,oldval){
+        watch: {
+            search_name: function (val, oldval) {
                 console.log('test')
                 if (val != oldval) {
                     let eq_serach = this.equipments.filter((item) => {
@@ -289,16 +306,41 @@
                     this.repairs.equipment = eq_serach[0]
 
                     this.search_in_number_uniq = this.repairs.equipment.id
+                    this.filter.department = this.repairs.equipment.department_id
                 }
             },
-            search_in_number_uniq: function(val,oldval){
+            search_in_number_uniq: function (val, oldval) {
                 console.log(val)
-                let eq_serach = this.equipments.filter((item)=>{
+                let eq_serach = this.equipments.filter((item) => {
                     return item.id == val
                 })
                 this.repairs.equipment = eq_serach[0]
 
                 this.search_name = this.repairs.equipment.id
+                this.filter.department = this.repairs.equipment.department_id
+            }
+        },
+        computed: {
+            filter_equipments() {
+                let filtred;
+
+                if (this.filter.department != null) {
+                    filtred = this.equipments.filter((item) => {
+                        let step = false;
+
+                        if (item.department_id == this.filter.department) {
+                            step = true
+                            console.log(1213)
+                        }
+                        console.log(1213)
+                        return step
+
+                    })
+                } else {
+                    filtred = this.equipments
+                }
+
+                return filtred
             }
         }
     }

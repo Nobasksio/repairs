@@ -2,7 +2,7 @@
 
 const Transfer = use('App/Models/Transfer')
 
-const Equipment = use('App/Models/equipment')
+const Equipment = use('App/Models/Equipment')
 
 const Department = use('App/Models/Department')
 

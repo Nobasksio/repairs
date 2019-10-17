@@ -12,7 +12,7 @@
                                 v-model="search_name"
                                 label="Название"
                                 placeholder="например Чайник"
-                                :items="equipments"
+                                :items="filter_equipments"
                                 item-text="name"
                                 item-value="id"
                                 outlined
@@ -34,7 +34,7 @@
                                 v-model="search_in_number_uniq"
                                 label="Внутренний инвентарный номер"
                                 placeholder="например 12345"
-                                :items="equipments"
+                                :items="filter_equipments"
                                 item-text="in_number_uniq"
                                 item-value="id"
                                 :rules="[v => !!v || 'Подразделение не может быть пустым']"
@@ -195,6 +195,9 @@
                 error_alert:false,
                 search_name: null,
                 search_in_number_uniq: null,
+                filter: {
+                    department: null,
+                },
                 departments:[],
                 equipments:[],
                 transfer:{
@@ -286,6 +289,29 @@
                 this.transfer.equipment = eq_serach[0]
 
                 this.search_name = this.transfer.equipment.id
+            }
+        },
+        computed:{
+            filter_equipments() {
+                let filtred;
+
+                if (this.filter.department != null) {
+                    filtred = this.equipments.filter((item) => {
+                        let step = false;
+
+                        if (item.department_id == this.filter.department) {
+                            step = true
+                            console.log(1213)
+                        }
+                        console.log(1213)
+                        return step
+
+                    })
+                } else {
+                    filtred = this.equipments
+                }
+
+                return filtred
             }
         }
     }

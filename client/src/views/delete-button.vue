@@ -1,10 +1,16 @@
 <template >
-    <div class="float-right">
-        <v-btn color="error" class="m-2 mx-5 float-right"
-               :loading="loading"
-               @click="wantDelete(want_delete_id)"
-               large >удалить
-        </v-btn >
+    <div class="float-right" >
+        <v-tooltip left  :disabled="!check_t">
+            <template v-slot:activator="{ on }" >
+                <v-btn color="error" class="m-2 mx-5 float-right"
+                       :loading="loading"
+                       v-on="on"
+                       @click="wantDelete(want_delete_id)"
+                       large >удалить
+                </v-btn >
+            </template >
+            <span >{{ check_text }}</span >
+        </v-tooltip >
         <v-dialog
                 v-model="dialog"
                 max-width="30%"
@@ -30,10 +36,12 @@
                     <v-btn
                             color="green darken-1"
                             text
+
                             @click="deleteItem"
                     >
                         Удалить
                     </v-btn >
+
                 </v-card-actions >
             </v-card >
         </v-dialog >
@@ -44,32 +52,37 @@
     const axios = require('axios');
     export default {
         name: "delete-button",
-        props:['entity_name_ru','entity_name_eng','want_delete_id','go_to']
+        props: ['entity_name_ru',
+            'entity_name_eng',
+            'want_delete_id',
+            'go_to',
+            'check_data',
+            'check_text']
         ,
-        data:()=>{
-            return{
-                dialog:false,
-                loading:false,
+        data: () => {
+            return {
+                dialog: false,
+                loading: false,
             }
         },
-        methods:{
-            wantDelete(item_id){
+        methods: {
+            wantDelete(item_id) {
                 this.dialog = true
             },
-            deleteItem(){
-                if ( this.want_delete_id != null ) {
-                    axios.delete('/api/'+this.entity_name_eng+'/' + this.want_delete_id,
+            deleteItem() {
+                if (this.want_delete_id != null) {
+                    axios.delete('/api/' + this.entity_name_eng + '/' + this.want_delete_id,
                     ).then((response) => {
                         this.loading = false
                         this.dialog = false
 
                         let href = this.entity_name_eng
-                        if (this.go_to === undefined){
+                        if (this.go_to === undefined) {
 
-                        } else{
+                        } else {
                             href = this.go_to
                         }
-                        this.$router.push('/'+href)
+                        this.$router.push('/' + href)
                     })
                         .catch((error) => {
                             console.log(error);
@@ -78,6 +91,17 @@
                         });
                 }
             }
+        },
+        computed: {
+            check_t() {
+                if (this.check_data === undefined){
+                    return false
+                } else{
+                    return this.check_data
+                }
+
+            },
+
         }
     }
 </script >

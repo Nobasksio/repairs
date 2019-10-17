@@ -2,11 +2,11 @@
 
 const Logger = use('Logger')
 
-const Equipment = use('App/Models/equipment')
+const Equipment = use('App/Models/Equipment')
 
 const Department = use('App/Models/Department')
 
-const Photo = use('App/Models/photo')
+const Photo = use('App/Models/Photo')
 
 var moment = require('moment');
 

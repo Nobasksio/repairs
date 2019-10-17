@@ -278,6 +278,7 @@
                     link:'',
                     id:0
                 },
+                dialog:false,
                 name_button: 'создать',
                 menu2: false,
                 valid: false,

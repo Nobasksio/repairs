@@ -1,7 +1,7 @@
 <template >
     <div >
         <v-row >
-            <v-col cols="4" >
+            <v-col cols="2" >
                 <v-autocomplete
                         label="Подразделение"
                         :items="departments"
@@ -14,66 +14,66 @@
                         outlined
                 ></v-autocomplete >
             </v-col >
-            <v-col cols="4" >
-                <v-menu
-                        ref="menu"
-                        v-model="menu"
-                        :close-on-content-click="false"
-
-                        transition="scale-transition"
-                        offset-y
-                        max-width="290px"
-                        min-width="290px"
-                >
-                    <template v-slot:activator="{ on }" >
-                        <v-text-field
-                                label="начало периода"
-                                outlined
-                                v-model="filter.date_start"
-                                placeholder="гггг-мм-дд"
-                                v-on="on"
-                        >
-                        </v-text-field >
-                    </template >
-                    <v-date-picker v-model="filter.date_start"
-                                   no-title
-                                   scrollable
-                                   @change="menu = false"
-                    >
-                        <div class="flex-grow-1" ></div >
-                    </v-date-picker >
-                </v-menu >
+            <v-col cols="2" >
+                <v-autocomplete
+                        label="группа"
+                        :items="group_eq"
+                        v-model="filter.group"
+                        chips
+                        small-chips
+                        multiple
+                        item-text="name"
+                        item-value="id"
+                        outlined
+                ></v-autocomplete >
             </v-col >
-            <v-col cols="4" >
-                <v-menu
-                        ref="menu2"
-                        v-model="menu2"
-                        :close-on-content-click="false"
+            <v-col cols="2" class="pb-0" >
 
-                        transition="scale-transition"
-                        offset-y
-                        max-width="290px"
-                        min-width="290px"
+                <v-autocomplete
+                        v-model="filter.name"
+                        label="Название"
+                        placeholder="например Чайник"
+                        :items="filter_equipments"
+                        item-text="name"
+                        item-value="id"
+                        outlined
+                        class="mr-2 mb-0"
                 >
-                    <template v-slot:activator="{ on }" >
-                        <v-text-field
-                                label="конец периода"
-                                outlined
-                                v-model="filter.date_finish"
-                                placeholder="гггг-мм-дд"
-                                v-on="on"
-                        >
-                        </v-text-field >
+                    <template v-slot:item="data" >
+                        <template >
+                            <v-list-item-content >
+                                <v-list-item-title v-html="data.item.name" ></v-list-item-title >
+                                <v-list-item-subtitle
+                                        v-html="(getDepartment(data.item.department_id)).name" ></v-list-item-subtitle >
+                            </v-list-item-content >
+                        </template >
                     </template >
-                    <v-date-picker v-model="filter.date_finish"
-                                   no-title
-                                   scrollable
-                                   @change="menu2 = false"
-                    >
-                        <div class="flex-grow-1" ></div >
-                    </v-date-picker >
-                </v-menu >
+                </v-autocomplete >
             </v-col >
+            <v-col cols="3" >
+                <v-autocomplete
+                        v-model="filter.number_uniq"
+                        label="внутренний инвентарный номер"
+                        placeholder="например 12345"
+                        :items="filter_equipments"
+                        item-text="in_number_uniq"
+                        item-value="id"
+                        outlined
+                        class="mr-2 mb-0"
+                ></v-autocomplete >
+            </v-col >
+            <v-col>
+                <div class="caption text-center">
+                    сумма оборудования <br>
+                    <span class="font-weight-black">{{ summ_filtred }} руб</span>
+                </div>
+            </v-col>
+            <v-col>
+                <v-btn color="primary" class="mt-1"
+
+                       large @click="clean()" >очистить
+                </v-btn >
+            </v-col>
         </v-row >
 
         <v-data-table
@@ -130,6 +130,9 @@
 
     const axios = require('axios');
     export default {
+        metaInfo: {
+            title: 'Список оборудования',
+        },
         data() {
             return {
                 page: 1,
@@ -141,8 +144,9 @@
                 group_eq: [],
                 filter: {
                     department: [],
-                    date_start: null,
-                    date_finish: null,
+                    name: null,
+                    number_uniq: null,
+                    group:[]
                 },
 
                 headers: [
@@ -201,12 +205,43 @@
                     filtred = this.equipments
                 }
 
+                if (this.filter.group.length > 0) {
+                    filtred = filtred.filter((item) => {
+                        let step = false;
+                        for(let i = 0; i < this.filter.group.length;i++  ){
+                            if  (item.type_eq_id == this.filter.group[i]){
+                                step = true
+                                break;
+                            }
+                        }
+                        return step
 
+                    })
+                }
 
+                if (this.filter.name != null){
+                    filtred = filtred.filter((item)=>{
+                       return item.id == this.filter.name
+                    })
+                }
 
+                if (this.filter.number_uniq != null){
+                    filtred = filtred.filter((item)=>{
+                        return item.id == this.filter.number_uniq
+                    })
+                }
 
 
                 return filtred
+            },
+            summ_filtred(){
+                let summ = 0
+
+                this.filter_equipments.forEach((item, i, arr)=>{
+                    summ = summ + item.price
+                })
+
+                return summ
             }
         },
         methods: {
@@ -254,6 +289,13 @@
                     new_date = ''
                 }
                 return new_date
+            },
+            clean(){
+                this.filter.department = []
+                this.filter.group = []
+                this.filter.number_uniq = null
+                this.filter.name = null
+
             }
         }
     }

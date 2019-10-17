@@ -13,10 +13,15 @@ export default new Router({
           path: '/',
           name: 'index',
           component: () => import(/* webpackChunkName: "about" */ './components/cabinet.vue'),
+          meta: {title: 'Учет ТМЦ'},
           children: [
-              {path: '/', component: () => import('./views/equipment-list.vue'),},
+              {path: '/', component: () => import('./views/equipment-list.vue'),
+                  meta: {title: 'Учет ТМЦ'},},
 
-              {path: '/equipment/create', component: () => import('./views/equipment-create.vue'),},
+              {path: '/equipment/create',
+                  component: () => import('./views/equipment-create.vue'),
+                  meta: {title: 'Создание оборудования'}
+              },
               {path: '/equipment/:id', component: () => import('./views/equipment.vue'),},
               {path: '/equipment/edit/:id', component: () => import('./views/equipment-edit.vue'),},
 

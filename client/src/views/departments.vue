@@ -1,5 +1,5 @@
 <template >
-    <div >
+    <div>
         <v-row >
             <v-col lg="4" md="6" cols="12" >
                 <v-treeview
@@ -7,6 +7,14 @@
                         :items="items"
 
                 >
+                    <template v-slot:label="{ item ,open}" >
+                        <div class="py-3">
+
+                            <span>{{item.name}}</span>
+                            <span class="d-block grey--text pr-10">{{item.count_eq}} шт</span>
+
+                        </div>
+                    </template >
                     <template v-slot:append="{ item, open }" >
                         <v-list-item-icon @click="editItem(item)">
                             <v-icon>mdi-pencil-outline</v-icon>

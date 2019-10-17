@@ -18,7 +18,9 @@ const Route = use('Route')
 
 Route.on('/').render('welcome').middleware('auth')
 
-
+Route.get('/api/test', ()=>{
+    return {massage:"test_ok"}
+})
 
 Route.post('/api/register','UserController.register')
 Route.post('/api/login','UserController.login')

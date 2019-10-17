@@ -1,7 +1,7 @@
 'use strict'
 
 const Repair = use('App/Models/Repair')
-const Equipment = use('App/Models/equipment')
+const Equipment = use('App/Models/Equipment')
 const Department = use('App/Models/Department')
 const Provider = use('App/Models/Provider')
 

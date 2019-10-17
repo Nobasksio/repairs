@@ -1,11 +1,11 @@
 <template >
     <div >
 
-        <v-navigation-drawer app >
+        <v-navigation-drawer app v-model="drawer">
             <v-list-item >
                 <v-list-item-content >
                     <v-list-item-title class="title" >
-                        Sushi Crorparation
+                        Repairs 19
                     </v-list-item-title >
                     <v-list-item-subtitle >
 
@@ -41,6 +41,8 @@
         </v-navigation-drawer >
 
         <v-app-bar app >
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+
             <!-- -->
         </v-app-bar >
 
@@ -77,6 +79,7 @@
 
         },
         data: () => ({
+            drawer: null,
             items: [
                 {
                     title: 'Оборудование',

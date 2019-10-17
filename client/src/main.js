@@ -2,6 +2,9 @@
 
 import Vue from 'vue';
 import Vuex from 'vuex';
+import Meta from 'vue-meta';
+
+Vue.use(Meta);
 
 Vue.use(Vuex);
 
