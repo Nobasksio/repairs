@@ -100,7 +100,7 @@ class EquipmentController {
 
 
 
-         await equipment.save()
+        await equipment.save()
 
         for (let i=0; i < equipment_param.photo.length; i++){
 

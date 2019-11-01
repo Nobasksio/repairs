@@ -113,12 +113,7 @@
                 >
                     edit
                 </v-icon >
-                <v-icon
-                        small
-                        @click="deleteItem(item)"
-                >
-                    delete
-                </v-icon >
+
             </template >
         </v-data-table >
 
@@ -163,7 +158,7 @@
                     {text: 'Окончание гарантии', value: 'warranty'},
                     {text: 'Дата Покупки', value: 'date_buy'},
                     // { text: 'В ремонте', value: 'iron' },
-                    {text: 'Actions', value: 'action', sortable: false},
+                    {text: '', value: 'action', sortable: false},
                 ],
                 equipments: [],
             }

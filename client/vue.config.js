@@ -8,7 +8,7 @@ module.exports = {
                 target:'http://127.0.0.1:3334',
             }
         },
-        disableHostCheck: true,
-        public: 'http://repairs.rest38.ru/',
+        // disableHostCheck: true,
+        // public: 'http://repairs.rest38.ru/',
     }
 }
