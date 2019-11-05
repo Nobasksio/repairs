@@ -26,7 +26,7 @@ Route.post('/api/register','UserController.register')
 Route.post('/api/login','UserController.login')
 
 Route.get('/api/equipments', 'EquipmentController.list')
-Route.post('/api/equipment', 'EquipmentController.create')
+Route.post('/api/equipment', 'EquipmentController.create').middleware('auth');
 Route.get('/api/equipment/:id', 'EquipmentController.equipment')
 Route.delete('/api/equipment/:id', 'EquipmentController.delete')
 

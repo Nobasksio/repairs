@@ -17,14 +17,14 @@ class DepartmentController {
     }
 
     async list({request, response}) {
-        console.log('start')
+
         let Departments_list = await Department.query().where('isDelete', false).fetch()
 
         return Departments_list
     }
 
     async list_tree({request, response}) {
-        console.log('start')
+
         let Departments_list = await Department.query().where('isDelete', false).fetch()
         let delete_position = []
         Departments_list = Departments_list.toJSON()
@@ -34,8 +34,6 @@ class DepartmentController {
             Departments_list[i].count_eq = await Equipment.query().where('department_id', Departments_list[i].id).where('isDelete', false).getCount()
 
         }
-
-
 
         Departments_list.forEach((item, i, arr) => {
             if (item.parent != null) {
@@ -68,7 +66,12 @@ class DepartmentController {
 
         let department_param = request.all().department
 
-        let department
+        let department,
+            old_state,
+            new_state,
+            dbloger = new Dbloger(),
+            user = await auth.getUser();
+
         if (department_param.id == null){
             department = new Department();
 
@@ -78,8 +81,7 @@ class DepartmentController {
 
         }
 
-
-        console.log(department_param)
+        old_state = JSON.stringify(department)
 
         department.name = department_param.name
         try {
@@ -92,6 +94,11 @@ class DepartmentController {
 
         try {
             await department.save()
+            /*
+               save new state and save history
+            */
+            new_state = JSON.stringify(department)
+            dbloger.createRecord(old_state,new_state,user.id,'department')
             return response.json({massage: 'всё ок'})
         } catch (e) {
             console.log(e)
@@ -101,13 +108,21 @@ class DepartmentController {
 
     }
 
-    async delete({params, request, response}) {
+    async delete({params, request, response,auth}) {
 
-        let department = await Department.findBy('id', params.id)
+        let department = await Department.findBy('id', params.id),
+            old_state,
+            new_state,
+            user = await auth.getUser(),
+            dbloger = new Dbloger();
 
+        old_state = JSON.stringify(department)
         department.isDelete = true
 
         await department.save()
+
+        new_state = JSON.stringify(department)
+        dbloger.createRecord(old_state,new_state,user.id,'department')
 
         return response.json({
             department: department,

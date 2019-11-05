@@ -337,7 +337,10 @@
             },
             create_equipment(){
 
-                axios.post('/api/equipment', {equipment:this.equipment})
+                axios.post('/api/equipment', {equipment:this.equipment},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    })
                     .then((response)=> {
                         this.loading = false
                         this.succ_alert = true

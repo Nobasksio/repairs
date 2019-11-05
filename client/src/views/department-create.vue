@@ -152,7 +152,10 @@
             },
             create_department(){
                 this.loading = true
-                axios.post('/api/department', {department:this.department} )
+                axios.post('/api/department', {department:this.department},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    } )
                     .then((response)=> {
                         console.log(response);
                         this.loading = false

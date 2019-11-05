@@ -263,7 +263,10 @@
                 this.equipment.in_number_uniq = Math.floor(Math.random() * (max - min) + min);
             },
             create_repair() {
-                axios.post('/api/repair', {repair: this.repairs})
+                axios.post('/api/repair', {repair: this.repairs},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    })
                     .then((response) => {
                         console.log(response);
                         this.error_alert = false

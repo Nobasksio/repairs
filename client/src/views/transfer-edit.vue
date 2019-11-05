@@ -251,7 +251,10 @@
         },
         methods:{
             create_transfer() {
-                axios.post('/api/transfer', {transfer: this.transfer})
+                axios.post('/api/transfer', {transfer: this.transfer},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    })
                     .then((response)=> {
                         console.log(response);
 

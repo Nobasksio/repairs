@@ -1,10 +1,9 @@
 'use strict'
 
 const Transfer = use('App/Models/Transfer')
-
 const Equipment = use('App/Models/Equipment')
-
 const Department = use('App/Models/Department')
+const Dbloger = use('App/Helpers/dbloger.js')
 
 var moment = require('moment');
 
@@ -19,40 +18,63 @@ class TransferController {
         })
     }
 
-    async create({request, response}) {
+    async create({request, response,auth}) {
 
-        let transfer_param = request.all().transfer
-        let transfer;
-        let action = ''
+        let transfer_param = request.all().transfer,
+            transfer,
+            action = '',
+            new_tr = true,
+            user = await auth.getUser(),
+            old_state,
+            dbloger = new Dbloger(),
+            new_state;
+
         if (transfer_param.id == null){
 
             transfer = new Transfer();
             action = 'add'
+
         } else {
 
+            new_tr = false
             transfer = await Transfer.findBy('id', transfer_param.id)
             action = 'update'
+
         }
 
+        old_state = JSON.stringify(transfer)
 
         transfer.equipment_id = transfer_param.equipment.id
         transfer.description = transfer_param.description
         transfer.from_dep_id = transfer_param.from_dep_id
         transfer.to_dep_id = transfer_param.to_dep_id
+        transfer.user_id = user.id
 
-        let equipment = await Equipment.findBy('id', transfer_param.equipment.id)
+        if (new_tr) {
+            let equipment = await Equipment.findBy('id', transfer_param.equipment.id)
+            equipment.department_id = transfer.to_dep_id
 
-        equipment.department_id = transfer.to_dep_id
+            await equipment.save()
+        }
 
         transfer.date_start = moment(transfer_param.date_start).format('YYYY-MM-DD HH:mm:ss');
         transfer.date_finish = moment(transfer_param.date_finish).format('YYYY-MM-DD HH:mm:ss');
 
-        await equipment.save()
+
         await transfer.save()
 
-        return response.json({status: 'ok',
+        /*
+        save new state and save history
+        */
+        new_state = JSON.stringify(transfer)
+        dbloger.createRecord(old_state,new_state,user.id,'transfer')
+
+
+        return response.json({
+            status: 'ok',
             action:action,
-            id:transfer.id})
+            id:transfer.id
+        })
     }
     async list({request, response}) {
         let transfer_list = await Transfer.query().where('isDelete', false).fetch()

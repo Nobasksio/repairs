@@ -15,7 +15,6 @@
                                 :rules="[rules.required, rules.min]"
                                 class="mr-2 mb-0"
                         >
-
                         </v-text-field >
                     </v-col >
                 </v-row >
@@ -114,7 +113,10 @@
         methods:{
             create_department(){
                 this.loading = true
-                axios.post('/api/type', {group:this.group} )
+                axios.post('/api/type', {group:this.group},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    } )
                     .then((response)=> {
                         console.log(response);
                         this.loading = false

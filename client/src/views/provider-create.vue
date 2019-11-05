@@ -114,7 +114,10 @@
         methods: {
             create_department() {
                 this.loading = true
-                axios.post('/api/provider', {provider: this.provider})
+                axios.post('/api/provider', {provider: this.provider},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    })
                     .then((response) => {
                         console.log(response);
                         this.loading = false

@@ -4,6 +4,7 @@ const Repair = use('App/Models/Repair')
 const Equipment = use('App/Models/Equipment')
 const Department = use('App/Models/Department')
 const Provider = use('App/Models/Provider')
+const Dbloger = use('App/Helpers/dbloger.js')
 
 var moment = require('moment');
 
@@ -59,12 +60,15 @@ class RepairController {
         })
     }
 
-    async create({request, response}) {
+    async create({request, response,auth}) {
 
-
-
-        let repair_param = request.all().repair
-        let repair;
+        let repair_param = request.all().repair,
+            repair,
+            dbloger = new Dbloger(),
+            old_state,
+            new_state,
+            user = await auth.getUser();
+        ;
         if (repair_param.id == null){
             repair = new Repair();
 
@@ -73,6 +77,7 @@ class RepairController {
             repair = await Repair.findBy('id', repair_param.id)
 
         }
+        old_state = JSON.stringify(repair)
 
         repair.date_start = moment(repair_param.date_start).format('YYYY-MM-DD HH:mm:ss');
         repair.description = repair_param.description
@@ -91,17 +96,29 @@ class RepairController {
 
         await repair.save()
 
+        new_state = JSON.stringify(repair)
+        dbloger.createRecord(old_state,new_state,user.id,'repairs')
+
+
 
         return response.json({massage: 'ok', id: repair.id})
 
     }
-    async delete({params,request, response}) {
+    async delete({params,request, response,auth}) {
 
-        let repairs = await Repair.findBy('id', params.id)
+        let repairs = await Repair.findBy('id', params.id),
+            old_state,
+            new_state,
+            user = await auth.getUser(),
+            dbloger = new Dbloger();
 
+        old_state = JSON.stringify(repairs)
         repairs.isDelete = true
 
         await repairs.save()
+
+        new_state = JSON.stringify(repairs)
+        dbloger.createRecord(old_state,new_state,user.id,'repairs')
 
         return response.json({
             repairs:repairs,

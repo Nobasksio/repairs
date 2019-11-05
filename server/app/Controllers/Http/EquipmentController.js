@@ -3,10 +3,9 @@
 const Logger = use('Logger')
 
 const Equipment = use('App/Models/Equipment')
-
 const Department = use('App/Models/Department')
-
 const Photo = use('App/Models/Photo')
+const Dbloger = use('App/Helpers/dbloger.js')
 
 var moment = require('moment');
 
@@ -47,7 +46,7 @@ class EquipmentController {
         return equipments_list
     }
 
-    async create({request, response}) {
+    async create({request, response, auth}) {
 
         // Logger.transport('file').info('request url is %s', request.url())
         //
@@ -57,7 +56,11 @@ class EquipmentController {
 
         let equipment_param = request.all().equipment
 
-        let equipment
+        let equipment,
+            old_state,
+            dbloger = new Dbloger(),
+            new_state,
+            user = await auth.getUser();
 
         if (equipment_param.id == null){
             equipment = new Equipment();
@@ -68,6 +71,11 @@ class EquipmentController {
 
         }
 
+        /*
+        save old state for history
+        */
+
+        old_state = JSON.stringify(equipment)
 
         equipment.name = equipment_param.name
         equipment.isDelete = false
@@ -97,10 +105,14 @@ class EquipmentController {
         equipment.type_eq_id = equipment_param.type_eq_id
         equipment.department_id = equipment_param.department_id
 
-
-
-
         await equipment.save()
+
+
+        /*
+         save new state and save history
+        */
+        new_state = JSON.stringify(equipment)
+        dbloger.createRecord(old_state,new_state,user.id,'equipment')
 
         for (let i=0; i < equipment_param.photo.length; i++){
 
@@ -111,7 +123,7 @@ class EquipmentController {
             photo.save()
         }
 
-        return response.json({name: 'myau'})
+        return response.json({name: 'myau', id: equipment.id})
     }
 
     async upload({params,request, response}) {
@@ -153,13 +165,21 @@ class EquipmentController {
             type:params.type,
         id:photo.id})
     }
-    async delete({params,request, response}) {
+    async delete({params,request, response,auth}) {
 
-        let equipment = await Equipment.findBy('id', params.id)
+        let equipment = await Equipment.findBy('id', params.id),
+            old_state,
+            new_state,
+            user = await auth.getUser(),
+            dbloger = new Dbloger();
 
+        old_state = JSON.stringify(equipment)
         equipment.isDelete = true
 
         await equipment.save()
+
+        new_state = JSON.stringify(equipment)
+        dbloger.createRecord(old_state,new_state,user.id,'equipment')
 
         return response.json({
             equipment:equipment,

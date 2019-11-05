@@ -290,6 +290,7 @@
                 upload_photo: [],
                 type_upload_photo:null,
                 equipment: {
+                    id:null,
                     name: '',
                     description: null,
                     type_eq_id: null,
@@ -334,11 +335,15 @@
             create_equipment() {
 
                 axios.post('/api/equipment',
-                    {equipment: this.equipment}
+                    {   equipment: this.equipment},
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                    }
                 ).then((response) => {
                     this.loading = false
                     this.succ_alert = true
                     this.name_button = 'сохранить'
+                    this.equipment.id = response.data.id
                 })
                     .catch((error) => {
                         console.log(error);
