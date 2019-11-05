@@ -169,6 +169,7 @@
                         <deleteButton
                                 entity_name_ru="Перемещение"
                                 entity_name_eng="transfer"
+                                go_to="transfer"
                                 :want_delete_id="transfer.id"
                         ></deleteButton>
                     </v-col>

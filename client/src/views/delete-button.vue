@@ -71,14 +71,16 @@
             },
             deleteItem() {
                 if (this.want_delete_id != null) {
-                    axios.delete('/api/' + this.entity_name_eng + '/' + this.want_delete_id,
+                    axios.delete('/api/' + this.entity_name_eng + '/' + this.want_delete_id,{
+                            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
+                        }
                     ).then((response) => {
                         this.loading = false
                         this.dialog = false
 
                         let href = this.entity_name_eng
                         if (this.go_to === undefined) {
-
+                            href = ''
                         } else {
                             href = this.go_to
                         }

@@ -190,6 +190,7 @@
 
                                 entity_name_ru="Ремонт"
                                 entity_name_eng="repair"
+                                go_to="repair"
                                 :want_delete_id="repairs.id"
                         ></deleteButton>
                     </v-col >
