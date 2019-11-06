@@ -327,10 +327,36 @@
                 this.show_photo = photo
                 this.dialog = true
             },
-            makeUniqNumber() {
-                let min = 1000000000;
-                let max = 9999999999;
-                this.equipment.in_number_uniq = Math.floor(Math.random() * (max - min) + min);
+            async makeUniqNumber() {
+                let min = 1000000000000,
+                    max = 9999999999999,
+                    number =  Math.floor(Math.random() * (max - min) + min),
+                    check = await this.checkUniqNumber(number);
+
+                    if (check) {
+                        this.equipment.in_number_uniq = number;
+                    } else {
+                        number =  Math.floor(Math.random() * (max - min) + min);
+                        if (this.checkUniqNumber(number)) {
+                            this.equipment.in_number_uniq = number;
+                        } else {
+
+                        }
+                    }
+            },
+            async checkUniqNumber(number){
+                let check;
+                await axios.post('/api/equipment/checknumber',{ number: number})
+                    .then((response) => {
+
+                        check = response.data
+
+                    })
+                    .catch(function (error) {
+                        check =  false
+                    })
+
+                return check
             },
             create_equipment() {
 
@@ -464,7 +490,7 @@
         watch: {
             equipment: {
                 handler: function (val, oldVal) {
-                    console.log(val)
+
                 },
                 deep: true
             }

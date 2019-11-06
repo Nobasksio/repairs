@@ -1,7 +1,7 @@
 <template >
     <div >
 
-        <v-navigation-drawer app v-model="drawer">
+        <v-navigation-drawer app v-model="drawer" class="d-print-none" id="drawer-left">
             <v-list-item >
                 <v-list-item-content >
                     <v-list-item-title class="title" >
@@ -40,14 +40,14 @@
             </v-col >
         </v-navigation-drawer >
 
-        <v-app-bar app >
+        <v-app-bar app class="d-print-none">
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
             <!-- -->
         </v-app-bar >
 
         <!-- Sizes your content based upon application components -->
-        <v-content >
+        <v-content id="content-main">
 
             <!-- Provides the application the proper gutter -->
             <v-container fluid >
@@ -59,7 +59,7 @@
             </v-container >
         </v-content >
 
-        <v-footer app >
+        <v-footer app class="d-print-none">
             <!-- -->
         </v-footer >
     </div >
@@ -140,5 +140,15 @@
 </script >
 
 <style scoped >
+    @media print {
+        #drawer-left {
+            display:none;
+        }
 
+        #content-main {
+            display: block;
+            margin: 0;
+            float: none;
+        }
+    }
 </style >

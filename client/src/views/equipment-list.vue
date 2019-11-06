@@ -81,8 +81,10 @@
                 :items="filter_equipments"
                 :page.sync="page"
                 :items-per-page="itemsPerPage"
-                hide-default-footer
-                class="elevation-1"
+
+                class="elevation-1 pb-10"
+                v-model="selected"
+                show-select
                 @page-count="pageCount = $event"
         >
             <template v-slot:item.equipment_id="{ item }" >
@@ -116,7 +118,29 @@
 
             </template >
         </v-data-table >
+        <v-footer v-show="selected.length > 0 "
+                  :fixed="true"
+                  :padless="true">
+            <v-card
+                    flat
+                    tile
+                    width="100%"
+                    class="blue lighten-2 text-right pb-2"
+            >
+                <v-card-text><span class="white--text">
+                    Вы выбрали <b>{{ selected.length }} единиц</b> оборудования</span>
+                    <v-btn
+                        @click="go_to_print()"
+                            class="mx-4"
 
+                    >
+                        Напечатать штрихкоды
+                    </v-btn>
+                </v-card-text>
+
+            </v-card>
+
+        </v-footer>
     </div >
 </template >
 
@@ -143,7 +167,7 @@
                     number_uniq: null,
                     group:[]
                 },
-
+                selected: [],
                 headers: [
                     {
                         text: 'Название',
@@ -284,6 +308,9 @@
                     new_date = ''
                 }
                 return new_date
+            },
+            go_to_print(){
+                this.$router.push({name:'barcode', params: {equipments: this.selected }})
             },
             clean(){
                 this.filter.department = []

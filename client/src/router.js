@@ -52,6 +52,7 @@ export default new Router({
 
           ]
       },
+      {path: '/barcodes/', name:"barcode", component: () => import('./views/barcode-print.vue'),props:true},
       {
           path: '/login',
           name: 'login',

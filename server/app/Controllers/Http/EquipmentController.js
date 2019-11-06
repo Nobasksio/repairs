@@ -165,6 +165,14 @@ class EquipmentController {
             type:params.type,
         id:photo.id})
     }
+
+    async checkNumber({params,request,response}){
+        let number = request.all().number,
+            equipment = await Equipment.findBy('in_number_uniq', number);
+
+        if (equipment) return response.send(false)
+        else return response.send(true)
+    }
     async delete({params,request, response,auth}) {
 
         let equipment = await Equipment.findBy('id', params.id),

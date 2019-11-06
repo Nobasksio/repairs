@@ -1,0 +1,9 @@
+@media print {
+    .print-button {display: none;} /* <-- */
+    .shcoke_blk{
+        width: 400px;
+        float: left;
+    }
+
+
+}

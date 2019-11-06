@@ -28,6 +28,13 @@
                                 <td >{{ equipment[item.name] }}</td >
                             </tr >
                             <tr >
+                                <td class="font-weight-bold" >Внутренний номер</td >
+                                <td >
+                                    <barcode :value="equipment.in_number_uniq"
+                                             :options="{ displayValue: true, width:3, height:70 }"></barcode>
+                                </td >
+                            </tr >
+                            <tr >
                                 <td class="font-weight-bold" >Гарантия действует</td >
                                 <td >{{ equipment.noWarranty ? 'Нет': 'Да'  }}</td >
                             </tr >
@@ -202,12 +209,15 @@
 <script >
     const axios = require('axios');
     import deleteButton from './delete-button'
+    import VueBarcode from '@xkeshi/vue-barcode';
+
+
 
     export default {
         name: "create",
         components:{
             deleteButton,
-
+            'barcode':VueBarcode
         },
         data: () => {
             return {
@@ -342,6 +352,11 @@
                 .catch((error) => {
                     console.log(error);
                 })
+
+            var { createCanvas } = require("canvas");
+            var canvas = createCanvas();
+            JsBarcode(canvas, "Hello");
+
 
 
         },
