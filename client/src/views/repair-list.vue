@@ -149,6 +149,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     var moment = require('moment');
     export default {
         name: "repair-list",
@@ -187,14 +188,14 @@
             }
         },
         mounted() {
-            axios.get('/api/lists')
+            HTTTP().get('/lists')
                 .then((response) => {
                     this.group_eq.splice(0, this.group_eq.length, ...response.data.type);
                 })
                 .catch((error) => {
                     console.log(error);
                 })
-            axios.get('/api/repair/')
+            HTTTP().get('/repair/')
                 .then((response) => {
 
                     this.repair = response.data.repair
@@ -320,10 +321,6 @@
 
                     })
                 }
-
-
-
-
 
                 return filtred
             },

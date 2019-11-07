@@ -50,6 +50,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         name: "delete-button",
         props: ['entity_name_ru',
@@ -71,9 +72,7 @@
             },
             deleteItem() {
                 if (this.want_delete_id != null) {
-                    axios.delete('/api/' + this.entity_name_eng + '/' + this.want_delete_id,{
-                            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                        }
+                    HTTTP().delete('/api/' + this.entity_name_eng + '/' + this.want_delete_id,
                     ).then((response) => {
                         this.loading = false
                         this.dialog = false

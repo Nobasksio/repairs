@@ -49,6 +49,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         name: "transfer-list",
         data () {
@@ -76,7 +77,7 @@
             }
         },
         mounted(){
-            axios.get('/api/transfer' )
+            HTTTP().get('/transfer' )
                 .then((response)=> {
                     this.transfer.splice(0, this.transfer.length, ...response.data.transfer);
                     this.equipment.splice(0, this.equipment.length, ...response.data.equipment);

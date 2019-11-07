@@ -90,6 +90,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     import deleteButton from './delete-button'
     export default {
         name: "create",
@@ -115,7 +116,7 @@
                 components:[{name:'мяу',id:1},{name:'гав',id:2}],
                 department:{
                     name:'',
-                    parent_id:{},
+                    parent_id:null,
                     logo:null,
                     sort:500
                 },
@@ -126,7 +127,7 @@
             }
         },
         mounted(){
-            axios.get('/api/lists' )
+            HTTTP().get('/lists' )
                 .then((response)=> {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                 })
@@ -134,7 +135,7 @@
                     console.log(error);
                 })
             if (this.load == true){
-                axios.get('/api/department/'+this.$route.params.id )
+                HTTTP().get('/department/'+this.$route.params.id )
                     .then((response)=> {
                         this.department = response.data.department
                         this.count_eq = response.data.count_eq
@@ -152,10 +153,8 @@
             },
             create_department(){
                 this.loading = true
-                axios.post('/api/department', {department:this.department},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    } )
+                HTTTP().post('/department', {department:this.department},
+                    )
                     .then((response)=> {
                         console.log(response);
                         this.loading = false

@@ -4,6 +4,8 @@ const Department = use('App/Models/Department')
 
 const Equipment = use('App/Models/Equipment')
 
+const Dbloger = use('App/Helpers/dbloger.js')
+
 class DepartmentController {
 
     async department({params, request, response}) {
@@ -62,7 +64,7 @@ class DepartmentController {
         return response_arr
     }
 
-    async create({request, response}) {
+    async create({request, response,auth}) {
 
         let department_param = request.all().department
 
@@ -82,13 +84,17 @@ class DepartmentController {
         }
 
         old_state = JSON.stringify(department)
-
+        department.isDelete = false
         department.name = department_param.name
-        try {
-            department.parent = department_param.parent_id.id
-        } catch (e) {
-            department.parent = null
-        }
+
+            if (department_param.parent_id == null) {
+                department.parent = null
+            } else {
+                department.parent = department_param.parent_id;
+            }
+
+
+
 
         department.sort = department_param.sort
 

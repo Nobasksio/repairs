@@ -268,6 +268,9 @@
 <script >
 
     const axios = require('axios');
+    import HTTTP from '../http';
+    import { mapState } from 'vuex';
+
     export default {
         name: "create",
         data: () => {
@@ -313,7 +316,7 @@
             }
         },
         mounted() {
-            axios.get('/api/lists')
+            HTTTP().get('/lists')
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.type_eq.splice(0, this.type_eq.length, ...response.data.type);
@@ -323,6 +326,7 @@
                 })
         },
         methods: {
+
             show_big_photo(photo){
                 this.show_photo = photo
                 this.dialog = true
@@ -346,7 +350,7 @@
             },
             async checkUniqNumber(number){
                 let check;
-                await axios.post('/api/equipment/checknumber',{ number: number})
+                await HTTTP.post('/equipment/checknumber',{ number: number})
                     .then((response) => {
 
                         check = response.data
@@ -360,11 +364,9 @@
             },
             create_equipment() {
 
-                axios.post('/api/equipment',
+                HTTTP().post('/equipment',
                     {   equipment: this.equipment},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    }
+
                 ).then((response) => {
                     this.loading = false
                     this.succ_alert = true
@@ -444,7 +446,7 @@
                   Make the request to the POST /single-file URL
                 */
                 this.uploading = true
-                axios.post('/api/upload_photo/'+this.type_upload_photo,
+                HTTTP().post('/upload_photo/'+this.type_upload_photo,
                     formData,
                     {
                         headers: {
@@ -463,6 +465,7 @@
             },
         },
         computed:{
+            ...mapState('auth',['nameLogin','tokenLogin']),
             date_warranty_rules(){
                 const rules = []
 

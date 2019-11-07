@@ -31,6 +31,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         name: "provider-list",
         data:()=>{
@@ -40,7 +41,7 @@
             }
         },
         mounted(){
-            axios.get('/api/lists' )
+            HTTTP().get('/lists' )
                 .then((response)=> {
                     this.providers.splice(0, this.providers.length, ...response.data.providers);
                 })

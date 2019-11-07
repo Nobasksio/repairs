@@ -3,6 +3,7 @@
 </template >
 
 <script >
+    import HTTTP from '../http';
     export default {
         name: "show-photo",
         props:['photo','dialog_up'],
@@ -15,7 +16,7 @@
         },
         methods:{
             delete_photo(photo){
-                axios.delete('/api/photo/'+photo.id,
+                HTTTP().delete('/photo/'+photo.id,
                 ).then((response) => {
 
 

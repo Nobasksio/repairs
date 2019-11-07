@@ -6,8 +6,7 @@ class UserController {
 
     async login({request,auth}){
         const register_param = request.all();
-        let email = register_param.user.email
-        let password = register_param.user.password
+        let { email,password  } = register_param
         const token = await auth.attempt(email,password);
 
         return token;

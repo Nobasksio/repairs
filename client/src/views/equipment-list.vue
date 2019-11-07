@@ -5,11 +5,12 @@
                 <v-autocomplete
                         label="Подразделение"
                         :items="departments"
-                        v-model="filter.department"
+                        v-model="departmentFilter"
                         chips
                         small-chips
                         multiple
                         item-text="name"
+                        @change="setDepartmentFilter"
                         item-value="id"
                         outlined
                 ></v-autocomplete >
@@ -18,7 +19,7 @@
                 <v-autocomplete
                         label="группа"
                         :items="group_eq"
-                        v-model="filter.group"
+                        v-model="groupFilter"
                         chips
                         small-chips
                         multiple
@@ -145,9 +146,12 @@
 </template >
 
 <script >
-    import HelloWorld from '../components/index-layout';
+    import { mapState, mapMutations, mapActions } from 'vuex';
+
+
 
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         metaInfo: {
             title: 'Список оборудования',
@@ -188,7 +192,7 @@
             }
         },
         mounted() {
-            axios.get('/api/lists')
+            HTTTP().get('/lists')
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.group_eq.splice(0, this.group_eq.length, ...response.data.type);
@@ -196,7 +200,7 @@
                 .catch((error) => {
                     console.log(error);
                 })
-            axios.get('/api/equipments')
+            HTTTP().get('/equipments')
                 .then((response) => {
                     this.equipments.splice(0, this.equipments.length, ...response.data);
                 })
@@ -205,14 +209,15 @@
                 })
         },
         computed: {
+            ...mapState('filter',['departmentFilter','groupFilter']),
             filter_equipments() {
                 let filtred;
 
-                if (this.filter.department.length > 0) {
+                if (this.departmentFilter.length > 0) {
                     filtred = this.equipments.filter((item) => {
                         let step = false;
-                        for(let i = 0; i < this.filter.department.length;i++  ){
-                            if  (item.department_id == this.filter.department[i]){
+                        for(let i = 0; i < this.departmentFilter.length;i++  ){
+                            if  (item.department_id == this.departmentFilter[i]){
                                 step = true
                                 break;
                             }
@@ -264,6 +269,10 @@
             }
         },
         methods: {
+            ...mapMutations('filter', [
+                'setDepartmentFilter','setGroupFilter'
+            ]),
+            ...mapActions('filter',['someAction']),
             getEquipment(equipment_id) {
                 let our_equipment = this.equipment.filter((item) => {
                     return item.id == equipment_id

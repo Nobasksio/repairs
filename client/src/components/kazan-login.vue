@@ -29,7 +29,8 @@
                                     <v-text-field
                                             label="Логин"
                                             name="login"
-                                            v-model="user.email"
+                                            v-model="emailLogin"
+                                            @input="setEmailLogin"
                                             prepend-icon="person"
                                             type="text"
                                     ></v-text-field>
@@ -37,7 +38,8 @@
                                     <v-text-field
                                             id="password"
                                             label="Пароль"
-                                            v-model="user.password"
+                                            v-model="passwordLogin"
+                                            @input="setPasswordLogin"
                                             name="password"
                                             prepend-icon="lock"
                                             type="password"
@@ -45,7 +47,7 @@
                                 </v-form>
                                 <v-alert
                                 type="error"
-                                v-show="show_error"
+                                :value="errorLogin"
                                 >
                                     Неверный логин или пароль
                                 </v-alert>
@@ -63,7 +65,9 @@
 </template>
 
 <script>
-    const axios = require('axios');
+
+    import { mapState, mapMutations, mapActions } from 'vuex';
+
     export default {
         name: "kazan-login",
         props: {
@@ -82,24 +86,13 @@
             }
         },
         methods:{
-            login() {
-
-                axios.post('/api/login',
-                    {user: this.user}
-                ).then((response) => {
-                    this.loading = false
-                    this.succ_alert = true
-                    localStorage.setItem('token', response.data.token);
-                    localStorage.setItem('email', this.user.email);
-                    this.$router.push('/')
-                })
-                    .catch((error) => {
-                        console.log(error);
-                        this.loading = false
-                        this.show_error = true
-
-                    });
-            },
+            ...mapMutations('auth', [
+                'setEmailLogin','setPasswordLogin'
+            ]),
+            ...mapActions('auth',['login'])
+        },
+        computed:{
+            ...mapState('auth',['emailLogin','passwordLogin','errorLogin'])
         }
     }
 </script>

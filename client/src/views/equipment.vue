@@ -208,6 +208,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     import deleteButton from './delete-button'
     import VueBarcode from '@xkeshi/vue-barcode';
 
@@ -323,7 +324,7 @@
             }
         },
         mounted() {
-            axios.get('/api/lists')
+            HTTTP().get('/lists')
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.type_eq.splice(0, this.type_eq.length, ...response.data.type);
@@ -332,7 +333,7 @@
                     console.log(error);
                 })
 
-            axios.get('/api/equipment/' + this.$route.params.id)
+            HTTTP().get('/equipment/' + this.$route.params.id)
                 .then((response) => {
                     this.equipment = response.data.equipment
                     this.equipment.department = response.data.equipmentDepartments
@@ -372,7 +373,7 @@
             },
             create_equipment() {
 
-                axios.post('/api/equipment', {equipment: this.equipment})
+                HTTTP().post('/equipment', {equipment: this.equipment})
                     .then((response) => {
                         this.loading = false
                         this.succ_alert = true
@@ -406,7 +407,7 @@
                 return new_date
             },
             delete_photo(photo){
-                axios.delete('/api/photo/'+photo.id,
+                HTTTP().delete('/photo/'+photo.id,
                 ).then((response) => {
 
 

@@ -182,6 +182,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     import deleteButton from './delete-button'
     export default {
         name: "transfer-edit",
@@ -223,7 +224,7 @@
             }
         },
         mounted(){
-            axios.get('/api/lists')
+            HTTTP().get('/lists')
             .then((response) => {
                 this.departments.splice(0, this.departments.length, ...response.data.department);
 
@@ -231,14 +232,14 @@
             .catch(function (error) {
                 console.log(error);
             })
-            axios.get('/api/equipments')
+            HTTTP().get('/equipments')
                 .then((response) => {
                     this.equipments.splice(0, this.equipments.length, ...response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
                 })
-            axios.get('/api/transfer/'+this.$route.params.id )
+            HTTTP().get('/transfer/'+this.$route.params.id )
                 .then((response)=> {
                     this.transfer = response.data.transfer
                     this.search_name = this.transfer.equipment_id
@@ -252,10 +253,7 @@
         },
         methods:{
             create_transfer() {
-                axios.post('/api/transfer', {transfer: this.transfer},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    })
+                HTTTP().post('/transfer', {transfer: this.transfer})
                     .then((response)=> {
                         console.log(response);
 

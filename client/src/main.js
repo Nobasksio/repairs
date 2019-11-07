@@ -12,7 +12,7 @@ import { sync } from 'vuex-router-sync';
 import { mdiAccount } from '@mdi/js'
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import store from './store/index.js';
 import vuetify from './plugins/vuetify';
 import indexLayout from './components/index-layout';
 

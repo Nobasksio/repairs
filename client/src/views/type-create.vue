@@ -59,6 +59,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     import deleteButton from './delete-button'
     export default {
         name: "create-type",
@@ -92,7 +93,7 @@
             }
         },
         mounted(){
-            axios.get('/api/lists' )
+            HTTTP().get('/lists' )
                 .then((response)=> {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                 })
@@ -101,7 +102,7 @@
                 })
 
             if (this.load == true){
-                axios.get('/api/group/'+this.$route.params.id )
+                HTTTP().get('/group/'+this.$route.params.id )
                     .then((response)=> {
                         this.group = response.data.group
                     })
@@ -113,10 +114,7 @@
         methods:{
             create_department(){
                 this.loading = true
-                axios.post('/api/type', {group:this.group},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    } )
+                HTTTP().post('/type', {group:this.group})
                     .then((response)=> {
                         console.log(response);
                         this.loading = false

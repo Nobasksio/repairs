@@ -67,6 +67,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     import deleteButton from './delete-button'
     export default {
         name: "create-type",
@@ -101,7 +102,7 @@
         },
         mounted(){
             if (this.load == true){
-                axios.get('/api/provider/'+this.$route.params.id )
+                HTTTP().get('/provider/'+this.$route.params.id )
                     .then((response)=> {
                         this.provider = response.data.provider
                         this.name_button ='сохранить'
@@ -114,10 +115,7 @@
         methods: {
             create_department() {
                 this.loading = true
-                axios.post('/api/provider', {provider: this.provider},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    })
+                HTTTP().post('/provider', {provider: this.provider})
                     .then((response) => {
                         console.log(response);
                         this.loading = false

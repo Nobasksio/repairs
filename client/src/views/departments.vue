@@ -34,10 +34,11 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         name: "department-list",
         mounted() {
-            axios.get('/api/department/tree')
+            HTTTP().get('/department/tree')
                 .then((response) => {
                     this.items.splice(0, this.items.length, ...response.data);
                 })

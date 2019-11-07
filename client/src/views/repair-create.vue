@@ -208,6 +208,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         name: "create",
         data: () => {
@@ -240,7 +241,7 @@
             }
         },
         mounted() {
-            axios.get('/api/lists')
+            HTTTP().get('/lists')
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.providers.splice(0, this.providers.length, ...response.data.providers);
@@ -248,7 +249,7 @@
                 .catch(function (error) {
                     console.log(error);
                 })
-            axios.get('/api/equipments')
+            HTTTP().get('/equipments')
                 .then((response) => {
                     this.equipments.splice(0, this.equipments.length, ...response.data);
                 })
@@ -263,10 +264,7 @@
                 this.equipment.in_number_uniq = Math.floor(Math.random() * (max - min) + min);
             },
             create_repair() {
-                axios.post('/api/repair', {repair: this.repairs},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    })
+                HTTTP().post('/repair', {repair: this.repairs})
                     .then((response) => {
                         console.log(response);
                         this.error_alert = false

@@ -36,7 +36,7 @@
                 </v-list-item >
             </v-list >
             <v-col cols="4" >
-                <v-btn color="primary" class="px-10"  @click="exit()" >Выход</v-btn >
+                <v-btn color="primary" class="px-10"  @click="logout" >Выход</v-btn >
             </v-col >
         </v-navigation-drawer >
 
@@ -66,18 +66,11 @@
 </template >
 
 <script >
+    import { mapGetters, mapActions, mapState} from 'vuex';
+    import router from '../router'
+    import store from '../store/index'
     export default {
         name: "cabinet",
-        beforeCreate:()=>{
-            if (localStorage.getItem('token') !== null){
-
-            } else {
-
-                window.location = "/login"
-                this.$router.push('/login')
-            }
-
-        },
         data: () => ({
             drawer: null,
             items: [
@@ -117,20 +110,22 @@
                     route:'/settings'
                 },
 
-                // {
-                //     title: "Создать класс оборудования",
-                //     icon: '',
-                //     route:'/class/create'
-                // },
-                // {
-                //     title: "Создать тип оборудования",
-                //     icon: '',
-                //     route:'/type/create'
-                // },
 
             ]
         }),
+        mounted:function(){
+
+
+            if (this.$store.state.auth.tokenLogin == null){
+                router.push('/login')
+            }
+
+        },
+        computed:{
+            ...mapGetters('auth',['isLoggedIn'])
+        },
         methods:{
+            ...mapActions('auth',['logout']),
             exit() {
                 delete localStorage.token;
                 this.$router.push('/login')

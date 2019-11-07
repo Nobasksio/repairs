@@ -261,6 +261,8 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
+    import { mapState } from 'vuex';
     export default {
         name: "create",
         data: () => {
@@ -303,7 +305,7 @@
             }
         },
         mounted(){
-            axios.get('/api/lists' )
+            HTTTP().get('/lists' )
                 .then((response)=> {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.type_eq.splice(0, this.type_eq.length, ...response.data.type);
@@ -312,7 +314,7 @@
                     console.log(error);
                 })
 
-            axios.get('/api/equipment/'+this.$route.params.id )
+            HTTTP().get('/equipment/'+this.$route.params.id )
                 .then((response)=> {
                     this.equipment = response.data.equipment
                     // this.equipment.photo.splice(0, this.equipment.photo.length, ...response.data.photo);
@@ -326,6 +328,7 @@
                 })
         },
         methods:{
+
             makeUniqNumber(){
                 let min = 1000000000000;
                 let max = 9999999999999;
@@ -337,10 +340,8 @@
             },
             create_equipment(){
 
-                axios.post('/api/equipment', {equipment:this.equipment},
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`},
-                    })
+                HTTTP().post('/equipment', {equipment:this.equipment},
+                    )
                     .then((response)=> {
                         this.loading = false
                         this.succ_alert = true
@@ -379,7 +380,7 @@
                   Make the request to the POST /single-file URL
                 */
                 this.uploading = true
-                axios.post('/api/upload_photo/'+this.type_upload_photo,
+                HTTTP().post('/upload_photo/'+this.type_upload_photo,
                     formData,
                     {
                         headers: {
@@ -397,7 +398,7 @@
                 });
             },
             delete_photo(photo){
-                axios.delete('/api/photo/'+photo.id,
+                HTTTP().delete('/photo/'+photo.id,
                 ).then((response) => {
 
                     this.equipment.photo.forEach((item, i, arr)=>{
@@ -419,6 +420,7 @@
             },
         },
         computed:{
+            ...mapState('auth',['nameLogin','tokenLogin']),
             date_warranty_rules(){
                 const rules = []
 

@@ -75,6 +75,7 @@
 
 <script >
     const axios = require('axios');
+    import HTTTP from '../http';
     export default {
         name: "register-form",
         data: () => {
@@ -101,7 +102,7 @@
         methods:{
             create_user() {
 
-                axios.post('/api/register',
+                HTTTP().post('/register',
                     {user: this.user}
                 ).then((response) => {
                     this.loading = false

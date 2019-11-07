@@ -29,6 +29,7 @@
 </template >
 
 <script >
+    import HTTTP from '../http';
     export default {
         name: "login",
         data: () => {
@@ -42,23 +43,7 @@
             }
         },
         methods:{
-            login() {
 
-                axios.post('/api/login',
-                    {user: this.user}
-                ).then((response) => {
-                    this.loading = false
-                    this.succ_alert = true
-                    localStorage.setItem('token', response.data.token);
-                    localStorage.setItem('email', user.email);
-                    this.name_button = 'сохранить'
-                })
-                    .catch((error) => {
-                        console.log(error);
-                        this.loading = false
-                        this.error_alert = true
-                    });
-            },
         }
     }
 </script >
