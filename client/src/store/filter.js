@@ -1,17 +1,27 @@
 
-
 export default{
     namespaced: true,
     state:{
-        departmentFilter:[4,5],
-        groupFilter:null,
+        departmentFilter:[],
+        groupFilter:[],
         nameFilter:null,
-        iunumberFilter:null
+        numberUniqFilter:null
     },
-    action:{
-        register({commit, state }){
-
+    actions:{
+        clear({ commit }){
+            commit('setDepartmentFilter', [])
+            commit('setGroupFilter', [])
+            commit('setNameFilter', null)
+            commit('setNumberUniqFilter', null)
         }
+    },
+    getters:{
+        departmentFilter:(state)=>{
+            state.departmentFilter
+        },
+        groupFilter:(state)=>{
+            state.groupFilter
+        },
     },
     mutations:{
         setDepartmentFilter(state, department){
@@ -20,6 +30,13 @@ export default{
         setGroupFilter(state, group){
             state.groupFilter = group;
         },
-    }
+        setNameFilter(state, name){
+            state.nameFilter = name;
+        },
+        setNumberUniqFilter(state, num){
+            state.numberUniqFilter = num;
+        },
+    },
+
 
 };

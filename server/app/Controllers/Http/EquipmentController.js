@@ -78,6 +78,7 @@ class EquipmentController {
         old_state = JSON.stringify(equipment)
 
         equipment.name = equipment_param.name
+        equipment.provider_id = equipment_param.provider_id
         equipment.isDelete = false
         equipment.description = equipment_param.description
         equipment.out_number = equipment_param.out_number

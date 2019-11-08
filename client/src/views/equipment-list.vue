@@ -20,6 +20,7 @@
                         label="группа"
                         :items="group_eq"
                         v-model="groupFilter"
+                        @change="setGroupFilter"
                         chips
                         small-chips
                         multiple
@@ -31,10 +32,11 @@
             <v-col cols="2" class="pb-0" >
 
                 <v-autocomplete
-                        v-model="filter.name"
+                        v-model="nameFilter"
                         label="Название"
                         placeholder="например Чайник"
                         :items="filter_equipments"
+                        @change="setNameFilter"
                         item-text="name"
                         item-value="id"
                         outlined
@@ -53,10 +55,11 @@
             </v-col >
             <v-col cols="3" >
                 <v-autocomplete
-                        v-model="filter.number_uniq"
+                        v-model="numberUniqFilter"
                         label="внутренний инвентарный номер"
                         placeholder="например 12345"
                         :items="filter_equipments"
+                        @change="setNumberUniqFilter"
                         item-text="in_number_uniq"
                         item-value="id"
                         outlined
@@ -72,7 +75,7 @@
             <v-col>
                 <v-btn color="primary" class="mt-1"
 
-                       large @click="clean()" >очистить
+                       large @click="clear" >очистить
                 </v-btn >
             </v-col>
         </v-row >
@@ -183,7 +186,7 @@
                     {text: 'Группа', value: 'type_eq_id'},
                     {text: 'Номер', value: 'out_number'},
                     {text: 'Гарантия', value: 'isWarranty'},
-                    {text: 'Окончание гарантии', value: 'warranty'},
+                    {text: 'Цена', value: 'price'},
                     {text: 'Дата Покупки', value: 'date_buy'},
                     // { text: 'В ремонте', value: 'iron' },
                     {text: '', value: 'action', sortable: false},
@@ -209,7 +212,7 @@
                 })
         },
         computed: {
-            ...mapState('filter',['departmentFilter','groupFilter']),
+            ...mapState('filter',['departmentFilter','groupFilter','nameFilter','numberUniqFilter']),
             filter_equipments() {
                 let filtred;
 
@@ -229,11 +232,11 @@
                     filtred = this.equipments
                 }
 
-                if (this.filter.group.length > 0) {
+                if (this.groupFilter.length > 0) {
                     filtred = filtred.filter((item) => {
                         let step = false;
-                        for(let i = 0; i < this.filter.group.length;i++  ){
-                            if  (item.type_eq_id == this.filter.group[i]){
+                        for(let i = 0; i < this.groupFilter.length;i++  ){
+                            if  (item.type_eq_id == this.groupFilter[i]){
                                 step = true
                                 break;
                             }
@@ -243,15 +246,15 @@
                     })
                 }
 
-                if (this.filter.name != null){
+                if (this.nameFilter != null){
                     filtred = filtred.filter((item)=>{
-                       return item.id == this.filter.name
+                       return item.id == this.nameFilter
                     })
                 }
 
-                if (this.filter.number_uniq != null){
+                if (this.numberUniqFilter != null){
                     filtred = filtred.filter((item)=>{
-                        return item.id == this.filter.number_uniq
+                        return item.id == this.numberUniqFilter
                     })
                 }
 
@@ -270,9 +273,9 @@
         },
         methods: {
             ...mapMutations('filter', [
-                'setDepartmentFilter','setGroupFilter'
+                'setDepartmentFilter','setGroupFilter','setNameFilter','setNumberUniqFilter'
             ]),
-            ...mapActions('filter',['someAction']),
+            ...mapActions('filter',['clear']),
             getEquipment(equipment_id) {
                 let our_equipment = this.equipment.filter((item) => {
                     return item.id == equipment_id

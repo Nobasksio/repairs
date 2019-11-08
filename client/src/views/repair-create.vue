@@ -152,9 +152,9 @@
                                 outlined
                         ></v-autocomplete >
                     </v-col >
-                    <v-col cols="4" >
-                        <v-btn color="primary" @click="" class="mt-2" >Добавить нового</v-btn >
-                    </v-col >
+                    <!--<v-col cols="4" >-->
+                        <!--<v-btn color="primary" @click="" class="mt-2" >Добавить нового</v-btn >-->
+                    <!--</v-col >-->
                 </v-row >
                 <v-row >
                     <v-col cols="4" >

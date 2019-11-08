@@ -1,11 +1,14 @@
-// import createPersistedState from 'vuex-persistedstate'
+import createPersistedState from 'vuex-persistedstate';
 import Vue from 'vue';
 import Vuex from 'vuex';
+
 
 import filter from './filter.js';
 import auth from './auth';
 
+
 Vue.use(Vuex);
+
 
 export default new Vuex.Store({
     strict:true,
@@ -22,7 +25,10 @@ export default new Vuex.Store({
     actions: {
 
         },
-    // plugins:[
-    //     createPersistedState()
-    // ]
+    plugins:[
+        createPersistedState({
+            key: 'filter',
+            paths:['filter','auth']
+        })
+    ]
 });

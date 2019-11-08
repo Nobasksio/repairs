@@ -225,6 +225,21 @@
                 <v-row >
                     <v-col cols="4" >
                         <v-autocomplete
+                                label="Поставщик"
+                                :items="providers"
+                                v-model="equipment.provider_id"
+                                item-text="name"
+                                item-value="id"
+                                outlined
+                        ></v-autocomplete >
+                    </v-col >
+                    <!--<v-col cols="4" >-->
+                        <!--<v-btn color="primary" @click="" class="mt-2" >Добавить нового</v-btn >-->
+                    <!--</v-col >-->
+                </v-row >
+                <v-row >
+                    <v-col cols="4" >
+                        <v-autocomplete
                                 label="Подразделение"
                                 :items="departments"
                                 v-model="equipment.department_id"
@@ -289,6 +304,7 @@
                 succ_alert: false,
                 error_alert: false,
                 departments: [],
+                providers:[],
                 type_eq: [],
                 upload_photo: [],
                 type_upload_photo:null,
@@ -299,6 +315,7 @@
                     type_eq_id: null,
                     out_number: null,
                     in_number: null,
+                    provider_id:null,
                     in_number_uniq: null,
                     date_buy: new Date().toISOString().substr(0, 10),
                     warranty: null,
@@ -320,6 +337,7 @@
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.type_eq.splice(0, this.type_eq.length, ...response.data.type);
+                    this.providers.splice(0, this.providers.length, ...response.data.providers);
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -350,7 +368,7 @@
             },
             async checkUniqNumber(number){
                 let check;
-                await HTTTP.post('/equipment/checknumber',{ number: number})
+                await HTTTP().post('/equipment/checknumber',{ number: number})
                     .then((response) => {
 
                         check = response.data

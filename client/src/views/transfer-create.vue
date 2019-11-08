@@ -52,7 +52,7 @@
                             <v-autocomplete
                                     label="Перемещаем с"
                                     :items="departments"
-                                    v-model="transfer.from_dep_id"
+                                    v-model="search_from_dep_id"
                                     item-text="name"
                                     :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                     item-value="id"
@@ -63,7 +63,7 @@
                         <v-col cols="4">
                             <v-autocomplete
                                     label="Подразделение на"
-                                    :items="departments"
+                                    :items="filtred_departments_to"
                                     v-model="transfer.to_dep_id"
                                     :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                     item-text="name"
@@ -196,6 +196,7 @@
                 error_alert:false,
                 search_name: null,
                 search_in_number_uniq: null,
+                search_from_dep_id: null,
                 filter: {
                     department: null,
                 },
@@ -240,7 +241,7 @@
                 HTTTP().post('/transfer', {transfer: this.transfer},
                    )
                     .then((response)=> {
-                        console.log(response);
+
 
                         if (response.data.action == 'add'){
                             this.succ_text = 'Перемещение успешно проведено'
@@ -273,7 +274,7 @@
         },
         watch:{
             search_name: function(val,oldval){
-                console.log('test')
+
                 if (val != oldval) {
                     let eq_serach = this.equipments.filter((item) => {
                         return item.id == val
@@ -281,16 +282,31 @@
                     this.transfer.equipment = eq_serach[0]
 
                     this.search_in_number_uniq = this.transfer.equipment.id
+                    this.search_from_dep_id = this.transfer.equipment.department_id
+                    this.transfer.from_dep_id = this.transfer.equipment.department_id
                 }
             },
             search_in_number_uniq: function(val,oldval){
-                console.log(val)
+
                 let eq_serach = this.equipments.filter((item)=>{
                     return item.id == val
                 })
                 this.transfer.equipment = eq_serach[0]
-
                 this.search_name = this.transfer.equipment.id
+                this.search_from_dep_id = this.transfer.equipment.department_id
+                this.transfer.from_dep_id = this.transfer.equipment.department_id
+
+            },
+            search_from_dep_id: function (val, oldval) {
+
+                this.filter.department = val
+
+                if (val != this.transfer.equipment.department_id){
+                    this.transfer.equipment = {id:null}
+
+                }
+                this.transfer.from_dep_id = val
+
             }
         },
         computed:{
@@ -303,14 +319,28 @@
 
                         if (item.department_id == this.filter.department) {
                             step = true
-                            console.log(1213)
+
                         }
-                        console.log(1213)
+
                         return step
 
                     })
                 } else {
                     filtred = this.equipments
+                }
+
+                return filtred
+            },
+            filtred_departments_to(){
+                let filtred;
+                if (this.transfer.equipment.id != null) {
+                    filtred = this.departments.filter((item) => {
+
+                        return item.id != this.transfer.equipment.department_id
+
+                    })
+                } else {
+                    filtred = this.departments
                 }
 
                 return filtred

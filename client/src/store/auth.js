@@ -1,5 +1,7 @@
 import router from '../router'
 import HTTTP from '../http';
+import createPersistedState from "vuex-persistedstate/index";
+
 
 export default {
     namespaced:true,
