@@ -12,7 +12,6 @@
         <v-tabs-items v-model="tab" >
             <v-tab-item value="tab-1" >
                 <v-card flat >
-
                     <DepartmentsList>
                     </DepartmentsList>
                 </v-card>
@@ -30,7 +29,7 @@
                 </v-card>
             </v-tab-item>
             <!--<v-tab-item-->
-                    <!--value="tab-4" >-->
+                <!--value="tab-4" >-->
                 <!--<v-card flat >-->
                 <!--</v-card>-->
             <!--</v-tab-item>-->
@@ -41,9 +40,9 @@
 </template >
 
 <script >
-    import DepartmentsList from './departments.vue';
+    import DepartmentsList from './department/departments.vue';
     import groupList from './group-list';
-    import providerList from './provider-list';
+    import providerList from './provider/provider-list';
     export default {
         name: "settings",
         components:{

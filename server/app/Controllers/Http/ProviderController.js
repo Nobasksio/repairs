@@ -1,6 +1,7 @@
 'use strict'
 
 const Provider = use('App/Models/Provider')
+const Dbloger = use('App/Helpers/dbloger.js')
 
 class ProviderController {
 
@@ -21,6 +22,7 @@ class ProviderController {
             old_state,
             dbloger = new Dbloger(),
             new_state,
+            provider_search,
             user = await auth.getUser();
 
         if (provider_params.id == null){
@@ -31,6 +33,13 @@ class ProviderController {
             provider = await Provider.findBy('id', provider_params.id)
 
         }
+
+        // provider_search = await Provider.findBy('name', provider_params.name)
+        //
+        // if (provider_search){
+        //     return response.json({ massage: 'Провайдер с таким именем уже есть',status:1})
+        // }
+
         old_state = JSON.stringify(provider)
 
 
@@ -47,7 +56,7 @@ class ProviderController {
             dbloger.createRecord(old_state,new_state,user.id,'provider')
 
 
-            return response.json({ massage: 'всё ок', status:1,id:provider.id})
+            return response.json({ massage: 'всё ок', status:1,id:provider.id, entity:provider})
         } catch (e) {
             console.log(e)
             return response.json({ massage: 'возникла ошибка при сохранении',status:0})

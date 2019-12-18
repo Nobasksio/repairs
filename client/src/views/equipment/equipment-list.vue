@@ -66,18 +66,18 @@
                         class="mr-2 mb-0"
                 ></v-autocomplete >
             </v-col >
-            <v-col>
-                <div class="caption text-center">
-                    сумма оборудования <br>
-                    <span class="font-weight-black">{{ summ_filtred }} руб</span>
-                </div>
-            </v-col>
-            <v-col>
+            <v-col >
+                <div class="caption text-center" >
+                    сумма оборудования <br >
+                    <span class="font-weight-black" >{{ summ_filtred }} руб</span >
+                </div >
+            </v-col >
+            <v-col >
                 <v-btn color="primary" class="mt-1"
 
                        large @click="clear" >очистить
                 </v-btn >
-            </v-col>
+            </v-col >
         </v-row >
 
         <v-data-table
@@ -124,37 +124,39 @@
         </v-data-table >
         <v-footer v-show="selected.length > 0 "
                   :fixed="true"
-                  :padless="true">
+                  :padless="true" >
             <v-card
                     flat
                     tile
                     width="100%"
                     class="blue lighten-2 text-right pb-2"
             >
-                <v-card-text><span class="white--text">
-                    Вы выбрали <b>{{ selected.length }} единиц</b> оборудования</span>
+                <v-card-text ><span class="white--text" >
+                    Вы выбрали <b >{{ selected.length }} единиц</b > оборудования</span >
                     <v-btn
-                        @click="go_to_print()"
+                            @click="go_to_print()"
                             class="mx-4"
 
                     >
                         Напечатать штрихкоды
-                    </v-btn>
-                </v-card-text>
+                    </v-btn >
+                </v-card-text >
 
-            </v-card>
+            </v-card >
 
-        </v-footer>
+        </v-footer >
     </div >
 </template >
 
 <script >
-    import { mapState, mapMutations, mapActions } from 'vuex';
+    import {mapState, mapMutations, mapActions} from 'vuex';
+
 
 
 
     const axios = require('axios');
-    import HTTTP from '../http';
+    import HTTTP from '../../http';
+
     export default {
         metaInfo: {
             title: 'Список оборудования',
@@ -172,7 +174,7 @@
                     department: [],
                     name: null,
                     number_uniq: null,
-                    group:[]
+                    group: []
                 },
                 selected: [],
                 headers: [
@@ -212,20 +214,20 @@
                 })
         },
         computed: {
-            ...mapState('filter',['departmentFilter','groupFilter','nameFilter','numberUniqFilter']),
+            ...mapState('filter', ['departmentFilter', 'groupFilter', 'nameFilter', 'numberUniqFilter']),
             filter_equipments() {
                 let filtred;
 
                 if (this.departmentFilter.length > 0) {
                     filtred = this.equipments.filter((item) => {
                         let step = false;
-                        for(let i = 0; i < this.departmentFilter.length;i++  ){
-                            if  (item.department_id == this.departmentFilter[i]){
+                        for (let i = 0; i < this.departmentFilter.length; i++) {
+                            if (item.department_id == this.departmentFilter[i]) {
                                 step = true
                                 break;
                             }
                         }
-                       return step
+                        return step
 
                     })
                 } else {
@@ -235,8 +237,8 @@
                 if (this.groupFilter.length > 0) {
                     filtred = filtred.filter((item) => {
                         let step = false;
-                        for(let i = 0; i < this.groupFilter.length;i++  ){
-                            if  (item.type_eq_id == this.groupFilter[i]){
+                        for (let i = 0; i < this.groupFilter.length; i++) {
+                            if (item.type_eq_id == this.groupFilter[i]) {
                                 step = true
                                 break;
                             }
@@ -246,14 +248,14 @@
                     })
                 }
 
-                if (this.nameFilter != null){
-                    filtred = filtred.filter((item)=>{
-                       return item.id == this.nameFilter
+                if (this.nameFilter != null) {
+                    filtred = filtred.filter((item) => {
+                        return item.id == this.nameFilter
                     })
                 }
 
-                if (this.numberUniqFilter != null){
-                    filtred = filtred.filter((item)=>{
+                if (this.numberUniqFilter != null) {
+                    filtred = filtred.filter((item) => {
                         return item.id == this.numberUniqFilter
                     })
                 }
@@ -261,10 +263,10 @@
 
                 return filtred
             },
-            summ_filtred(){
+            summ_filtred() {
                 let summ = 0
 
-                this.filter_equipments.forEach((item, i, arr)=>{
+                this.filter_equipments.forEach((item, i, arr) => {
                     summ = summ + item.price
                 })
 
@@ -273,15 +275,15 @@
         },
         methods: {
             ...mapMutations('filter', [
-                'setDepartmentFilter','setGroupFilter','setNameFilter','setNumberUniqFilter'
+                'setDepartmentFilter', 'setGroupFilter', 'setNameFilter', 'setNumberUniqFilter'
             ]),
-            ...mapActions('filter',['clear']),
+            ...mapActions('filter', ['clear']),
             getEquipment(equipment_id) {
                 let our_equipment = this.equipment.filter((item) => {
                     return item.id == equipment_id
                 })
-                if (our_equipment.length == 0){
-                    our_equipment = [{name:''}]
+                if (our_equipment.length == 0) {
+                    our_equipment = [{name: ''}]
                 }
                 return our_equipment[0]
             },
@@ -289,8 +291,8 @@
                 let our_group = this.group_eq.filter((item) => {
                     return item.id == type_id
                 })
-                if (our_group.length == 0){
-                    our_group = [{name:''}]
+                if (our_group.length == 0) {
+                    our_group = [{name: ''}]
                 }
                 return our_group[0]
             },
@@ -300,8 +302,8 @@
                 our_department = this.departments.filter((item) => {
                     return item.id == department_id
                 })
-                if (our_department.length == 0){
-                    our_department = [{name:'подразделение удалено'}]
+                if (our_department.length == 0) {
+                    our_department = [{name: 'подразделение удалено'}]
                 }
                 return our_department[0]
             },
@@ -321,10 +323,10 @@
                 }
                 return new_date
             },
-            go_to_print(){
-                this.$router.push({name:'barcode', params: {equipments: this.selected }})
+            go_to_print() {
+                this.$router.push({name: 'barcode', params: {equipments: this.selected}})
             },
-            clean(){
+            clean() {
                 this.filter.department = []
                 this.filter.group = []
                 this.filter.number_uniq = null

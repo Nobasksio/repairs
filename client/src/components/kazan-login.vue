@@ -54,7 +54,7 @@
                             </v-card-text>
                             <v-card-actions>
                                 <div class="flex-grow-1"></div>
-                                <v-btn color="red darken-1 white-text" @click="login()">Войти</v-btn>
+                                <v-btn color="red darken-1 white--text" @click="login()">Войти</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
@@ -92,13 +92,11 @@
             ...mapActions('auth',['login'])
         },
         computed:{
-            ...mapState('auth',['emailLogin','passwordLogin','errorLogin'])
+             ...mapState('auth',['emailLogin','passwordLogin','errorLogin'])
         }
     }
 </script>
 
 <style scoped >
-.white-text{
-    color:#ffffff;
-}
+
 </style >

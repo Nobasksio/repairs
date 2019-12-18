@@ -1,6 +1,6 @@
 import router from '../router'
 import HTTTP from '../http';
-import createPersistedState from "vuex-persistedstate/index";
+
 
 
 export default {
@@ -10,11 +10,15 @@ export default {
         passwordLogin:null,
         nameLogin:null,
         tokenLogin:null,
-        errorLogin:null
+        errorLogin:false
     },
     actions:{
         logout({commit}){
             commit('setToken', null)
+            commit('setEmailLogin', null)
+            commit('setPasswordLogin', null)
+            commit('setNameLogin', null)
+            commit('setErrorLogin', false)
             router.push('/login')
         },
          login({commit, state }){
@@ -25,6 +29,8 @@ export default {
                 commit('setToken', data.token)
                 commit('setNameLogin', data.name)
                 router.push('/')
+            }).catch(function (error) {
+                commit('setErrorLogin', true)
             })
         }
     },
@@ -45,6 +51,9 @@ export default {
         },
         setToken(state,token){
             state.tokenLogin = token
+        },
+        setErrorLogin(state,error){
+            state.errorLogin = error
         }
 
     }

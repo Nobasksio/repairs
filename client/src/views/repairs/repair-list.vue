@@ -149,7 +149,7 @@
 
 <script >
     const axios = require('axios');
-    import HTTTP from '../http';
+    import HTTTP from '../../http';
     var moment = require('moment');
     export default {
         name: "repair-list",

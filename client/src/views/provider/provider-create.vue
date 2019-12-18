@@ -67,8 +67,10 @@
 
 <script >
     const axios = require('axios');
-    import HTTTP from '../http';
-    import deleteButton from './delete-button'
+    import HTTTP from '../../http';
+    import deleteButton from '../delete-button'
+
+    import {mapState, mapMutations,mapActions} from 'vuex';
     export default {
         name: "create-type",
         components:{
@@ -113,6 +115,9 @@
             }
         },
         methods: {
+            ...mapMutations('lists', [
+                'addProviders'
+            ]),
             create_department() {
                 this.loading = true
                 HTTTP().post('/provider', {provider: this.provider})
@@ -120,7 +125,10 @@
                         console.log(response);
                         this.loading = false
                         this.succ_alert = true
+                        this.provider.id = response.data.entity.id
                         this.name_button = 'сохранить'
+                        this.addProviders([response.data.entity])
+                        this.$emit('added', response.data.entity);
                     })
                     .catch((error) => {
                         console.log(error);

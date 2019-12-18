@@ -276,7 +276,7 @@
 
 <script >
     const axios = require('axios');
-    import HTTTP from '../http';
+    import HTTTP from '../../http';
     import { mapState } from 'vuex';
     export default {
         name: "create",

@@ -6,9 +6,10 @@
     "serve": "vue-cli-service serve --port 3333",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.spec.js"
+    "test": "jest"
   },
   "dependencies": {
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@mdi/js": "^4.5.95",
     "@xkeshi/vue-barcode": "^1.0.0",
     "axios": "^0.19.0",
@@ -17,6 +18,8 @@
     "canvas": "^2.6.0",
     "core-js": "^2.6.10",
     "flush-promises": "^1.0.2",
+    "jest-transform-css": "^2.0.0",
+    "jest-transform-stub": "^2.0.0",
     "jsbarcode": "^3.11.0",
     "lodash": "^4.17.15",
     "material-design-icons": "^3.0.1",
@@ -37,8 +40,11 @@
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/server-test-utils": "^1.0.0-beta.29",
     "@vue/test-utils": "^1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.9.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "jest": "^24.9.0",
@@ -46,23 +52,13 @@
     "material-design-icons-iconfont": "^5.0.1",
     "mocha": "^6.2.2",
     "mocha-webpack": "^1.1.0",
+    "moxios": "^0.4.0",
+    "regenerator-runtime": "^0.11.0",
     "sass": "^1.23.3",
     "sass-loader": "^7.3.1",
     "vue-cli-plugin-vuetify": "^0.6.3",
     "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.2.2"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "moduleNameMapper": {},
-    "transform": {
-      ".*?\\.(vue)$": "<rootDir>/node_modules/vue-jest",
-      ".*": "babel-jest"
-    }
   }
 }

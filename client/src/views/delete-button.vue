@@ -72,7 +72,7 @@
             },
             deleteItem() {
                 if (this.want_delete_id != null) {
-                    HTTTP().delete('/api/' + this.entity_name_eng + '/' + this.want_delete_id,
+                    HTTTP().delete('/' + this.entity_name_eng + '/' + this.want_delete_id,
                     ).then((response) => {
                         this.loading = false
                         this.dialog = false

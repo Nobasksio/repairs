@@ -12,18 +12,17 @@
                                 v-model="search_name"
                                 label="Название"
                                 placeholder="например Чайник"
-                                :items="filter_equipments"
+                                :items="equipments"
                                 item-text="name"
                                 item-value="id"
                                 outlined
-                                :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                 class="mr-2 mb-0"
                         >
                             <template v-slot:item="data">
                                 <template>
                                     <v-list-item-content>
-                                        <v-list-item-title v-html="data.item.name"></v-list-item-title>
-                                        <v-list-item-subtitle v-html="(getDepartment(data.item.department_id)).name"></v-list-item-subtitle>
+                                        <v-list-item-title v-html="data.item.name +' - ' +data.item.department_id"></v-list-item-title>
+                                        <v-list-item-subtitle v-html="data.item.department_id"></v-list-item-subtitle>
                                     </v-list-item-content>
                                 </template>
                             </template>
@@ -34,10 +33,10 @@
                                 v-model="search_in_number_uniq"
                                 label="Внутренний инвентарный номер"
                                 placeholder="например 12345"
-                                :items="filter_equipments"
+                                :items="equipments"
                                 item-text="in_number_uniq"
                                 item-value="id"
-                                :rules="[v => !!v || 'Подразделение не может быть пустым']"
+
                                 outlined
                                 class="mr-2 mb-0"
                         ></v-autocomplete>
@@ -52,9 +51,8 @@
                             <v-autocomplete
                                     label="Перемещаем с"
                                     :items="departments"
-                                    v-model="search_from_dep_id"
+                                    v-model="transfer.from_dep_id"
                                     item-text="name"
-                                    :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                     item-value="id"
                                     outlined
                             ></v-autocomplete>
@@ -63,9 +61,8 @@
                         <v-col cols="4">
                             <v-autocomplete
                                     label="Подразделение на"
-                                    :items="filtred_departments_to"
+                                    :items="departments"
                                     v-model="transfer.to_dep_id"
-                                    :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                     item-text="name"
                                     item-value="id"
                                     outlined
@@ -164,11 +161,17 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col cols="4" >
+                    <v-col  >
                         <v-btn color="primary" class="m-2"
                                :loading="loading"
                                :disabled="loading || !valid"
                                large @click="create_transfer()" >{{name_button}}</v-btn>
+                        <deleteButton
+                                entity_name_ru="Перемещение"
+                                entity_name_eng="transfer"
+                                go_to="transfer"
+                                :want_delete_id="transfer.id"
+                        ></deleteButton>
                     </v-col>
                 </v-row>
             </v-container >
@@ -179,9 +182,14 @@
 
 <script >
     const axios = require('axios');
-    import HTTTP from '../http';
+    import HTTTP from '../../http';
+    import deleteButton from '../delete-button'
     export default {
-        name: "transfer-create",
+        name: "transfer-edit",
+        components:{
+            deleteButton,
+
+        },
         data: () => {
             return {
                 id_page:null,
@@ -196,10 +204,6 @@
                 error_alert:false,
                 search_name: null,
                 search_in_number_uniq: null,
-                search_from_dep_id: null,
-                filter: {
-                    department: null,
-                },
                 departments:[],
                 equipments:[],
                 transfer:{
@@ -210,8 +214,8 @@
                     user_id:null,
                     description:null,
                     isDelete:false,
-                    date_start:new Date().toISOString().substr(0, 10),
-                    date_finish:new Date().toISOString().substr(0, 10),
+                    date_start:'',
+                    date_finish:''
                 },
                 rules: {
                     required: value => !!value || 'Поле не может быть пустым',
@@ -235,13 +239,23 @@
                 .catch(function (error) {
                     console.log(error);
                 })
+            HTTTP().get('/transfer/'+this.$route.params.id )
+                .then((response)=> {
+                    this.transfer = response.data.transfer
+                    this.search_name = this.transfer.equipment_id
+
+                    this.transfer.date_start = this.transfer.date_start.substr(0,10)
+                    this.transfer.date_finish = this.transfer.date_finish.substr(0,10)
+                })
+                .catch((error)=> {
+                    console.log(error);
+                })
         },
         methods:{
             create_transfer() {
-                HTTTP().post('/transfer', {transfer: this.transfer},
-                   )
+                HTTTP().post('/transfer', {transfer: this.transfer})
                     .then((response)=> {
-
+                        console.log(response);
 
                         if (response.data.action == 'add'){
                             this.succ_text = 'Перемещение успешно проведено'
@@ -258,23 +272,11 @@
                         this.error_alert = true
                         console.log(error);
                     });
-            },
-            getDepartment(department_id) {
-                let our_department = []
-
-                our_department = this.departments.filter((item) => {
-                    return item.id == department_id
-                })
-                if (our_department.length == 0){
-                    our_department = [{name:'подразделение удалено'}]
-                }
-
-                return our_department[0]
-            },
+            }
         },
         watch:{
             search_name: function(val,oldval){
-
+                console.log('test')
                 if (val != oldval) {
                     let eq_serach = this.equipments.filter((item) => {
                         return item.id == val
@@ -282,68 +284,16 @@
                     this.transfer.equipment = eq_serach[0]
 
                     this.search_in_number_uniq = this.transfer.equipment.id
-                    this.search_from_dep_id = this.transfer.equipment.department_id
-                    this.transfer.from_dep_id = this.transfer.equipment.department_id
                 }
             },
             search_in_number_uniq: function(val,oldval){
-
+                console.log(val)
                 let eq_serach = this.equipments.filter((item)=>{
                     return item.id == val
                 })
                 this.transfer.equipment = eq_serach[0]
+
                 this.search_name = this.transfer.equipment.id
-                this.search_from_dep_id = this.transfer.equipment.department_id
-                this.transfer.from_dep_id = this.transfer.equipment.department_id
-
-            },
-            search_from_dep_id: function (val, oldval) {
-
-                this.filter.department = val
-
-                if (val != this.transfer.equipment.department_id){
-                    this.transfer.equipment = {id:null}
-
-                }
-                this.transfer.from_dep_id = val
-
-            }
-        },
-        computed:{
-            filter_equipments() {
-                let filtred;
-
-                if (this.filter.department != null) {
-                    filtred = this.equipments.filter((item) => {
-                        let step = false;
-
-                        if (item.department_id == this.filter.department) {
-                            step = true
-
-                        }
-
-                        return step
-
-                    })
-                } else {
-                    filtred = this.equipments
-                }
-
-                return filtred
-            },
-            filtred_departments_to(){
-                let filtred;
-                if (this.transfer.equipment.id != null) {
-                    filtred = this.departments.filter((item) => {
-
-                        return item.id != this.transfer.equipment.department_id
-
-                    })
-                } else {
-                    filtred = this.departments
-                }
-
-                return filtred
             }
         }
     }

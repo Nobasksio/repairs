@@ -1,20 +1,36 @@
 <template >
     <div >
         <h1 class="display-1" >Создание оборудования</h1 >
-        <v-dialog v-model="dialog" max-width="50%">
-            <v-card>
-            <v-img
-                    class="pointer"
-                    :src="'http://127.0.0.1:3334/uploads/'+show_photo.link" />
+        <v-dialog v-model="dialog" max-width="50%" >
+            <v-card >
+                <v-img
+                        class="pointer"
+                        :src="'http://127.0.0.1:3334/uploads/'+show_photo.link" />
                 <v-card-actions >
-                    <div class="flex-grow-1"></div>
-                    <v-btn icon align="center" @click="delete_photo(show_photo)">
+                    <div class="flex-grow-1" ></div >
+                    <v-btn icon align="center" @click="delete_photo(show_photo)" >
                         <v-icon >mdi-trash-can-outline</v-icon >
                     </v-btn >
-                    <div class="flex-grow-1"></div>
+                    <div class="flex-grow-1" ></div >
                 </v-card-actions >
-            </v-card>
-        </v-dialog>
+            </v-card >
+        </v-dialog >
+        <v-dialog
+                v-model="dialog_provider"
+                max-width="50%"
+        >
+            <v-card >
+                <v-card-text>
+                <div class="white pa-2" >
+                    <provider-create v-on:added="chooseProvider($event)" ></provider-create >
+                </div >
+                </v-card-text>
+                <v-card-actions >
+                    <v-spacer></v-spacer>
+                    <v-btn color=" blue darken-1" class="float-left" text @click="dialog_provider = false" >Закрыть</v-btn >
+                </v-card-actions >
+            </v-card >
+        </v-dialog >
         <v-form v-model="valid" >
 
             <v-container class="px-4 py-4 align-self-start ml-0" >
@@ -39,17 +55,17 @@
                 </v-row >
                 <v-row v-if="equipment_photo.length > 0" class="justify-start d-flex mx-2" >
 
-                        <v-card
+                    <v-card
+                            max-width="100"
+                            class="pointer"
+                            v-for="photo_item in equipment_photo"
+                            @click="show_big_photo(photo_item)"
+                    >
+                        <v-img
                                 max-width="100"
                                 class="pointer"
-                                v-for="photo_item in equipment_photo"
-                                @click="show_big_photo(photo_item)"
-                        >
-                            <v-img
-                                    max-width="100"
-                                    class="pointer"
-                                    :src="'http://127.0.0.1:3334/uploads/'+photo_item.link" />
-                        </v-card >
+                                :src="'http://127.0.0.1:3334/uploads/'+photo_item.link" />
+                    </v-card >
 
                 </v-row >
                 <v-row >
@@ -116,7 +132,7 @@
                                 <v-text-field
                                         label="дата покупки"
                                         outlined
-                                        placeholder="дд-мм-гггг"
+                                        placeholder="гггг-мм-дд"
                                         v-model="equipment.date_buy"
                                         v-on="on"
                                 >
@@ -233,9 +249,10 @@
                                 outlined
                         ></v-autocomplete >
                     </v-col >
-                    <!--<v-col cols="4" >-->
-                        <!--<v-btn color="primary" @click="" class="mt-2" >Добавить нового</v-btn >-->
-                    <!--</v-col >-->
+                    <v-col cols="4" >
+                        <v-btn color="primary" @click="dialog_provider = true" class="mt-2" >Добавить нового</v-btn >
+                    </v-col >
+
                 </v-row >
                 <v-row >
                     <v-col cols="4" >
@@ -283,39 +300,43 @@
 <script >
 
     const axios = require('axios');
-    import HTTTP from '../http';
-    import { mapState } from 'vuex';
+    import HTTTP from '../../http';
+    import providerCreate from '../provider/provider-create'
+    // import { mapState } from 'vuex';
+
+    import {mapState, mapMutations, mapActions} from 'vuex';
 
     export default {
         name: "create",
+        components: {
+            providerCreate
+        },
         data: () => {
             return {
                 modal: false,
                 menu: false,
-                show_photo:{
-                    link:'',
-                    id:0
+                show_photo: {
+                    link: '',
+                    id: 0
                 },
-                dialog:false,
+                dialog: false,
+                dialog_provider: false,
                 name_button: 'создать',
                 menu2: false,
                 valid: false,
                 loading: false,
                 succ_alert: false,
                 error_alert: false,
-                departments: [],
-                providers:[],
-                type_eq: [],
                 upload_photo: [],
-                type_upload_photo:null,
+                type_upload_photo: null,
                 equipment: {
-                    id:null,
+                    id: null,
                     name: '',
                     description: null,
                     type_eq_id: null,
                     out_number: null,
                     in_number: null,
-                    provider_id:null,
+                    provider_id: null,
                     in_number_uniq: null,
                     date_buy: new Date().toISOString().substr(0, 10),
                     warranty: null,
@@ -332,50 +353,50 @@
                 },
             }
         },
-        mounted() {
-            HTTTP().get('/lists')
-                .then((response) => {
-                    this.departments.splice(0, this.departments.length, ...response.data.department);
-                    this.type_eq.splice(0, this.type_eq.length, ...response.data.type);
-                    this.providers.splice(0, this.providers.length, ...response.data.providers);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                })
+        beforeMount() {
+            this.fill_lists();
+
         },
         methods: {
-
-            show_big_photo(photo){
+            ...mapMutations('lists', [
+                'addProviders', 'addDepartment', 'addTypes'
+            ]),
+            ...mapActions('lists', ['fill_lists']),
+            chooseProvider(provider) {
+                console.log(provider)
+                this.equipment.provider_id = provider.id
+            },
+            show_big_photo(photo) {
                 this.show_photo = photo
                 this.dialog = true
             },
             async makeUniqNumber() {
                 let min = 1000000000000,
                     max = 9999999999999,
-                    number =  Math.floor(Math.random() * (max - min) + min),
+                    number = Math.floor(Math.random() * (max - min) + min),
                     check = await this.checkUniqNumber(number);
 
-                    if (check) {
+                if (check) {
+                    this.equipment.in_number_uniq = number;
+                } else {
+                    number = Math.floor(Math.random() * (max - min) + min);
+                    if (this.checkUniqNumber(number)) {
                         this.equipment.in_number_uniq = number;
                     } else {
-                        number =  Math.floor(Math.random() * (max - min) + min);
-                        if (this.checkUniqNumber(number)) {
-                            this.equipment.in_number_uniq = number;
-                        } else {
 
-                        }
                     }
+                }
             },
-            async checkUniqNumber(number){
+            async checkUniqNumber(number) {
                 let check;
-                await HTTTP().post('/equipment/checknumber',{ number: number})
+                await HTTTP().post('/equipment/checknumber', {number: number})
                     .then((response) => {
 
                         check = response.data
 
                     })
                     .catch(function (error) {
-                        check =  false
+                        check = false
                     })
 
                 return check
@@ -383,8 +404,7 @@
             create_equipment() {
 
                 HTTTP().post('/equipment',
-                    {   equipment: this.equipment},
-
+                    {equipment: this.equipment},
                 ).then((response) => {
                     this.loading = false
                     this.succ_alert = true
@@ -464,7 +484,7 @@
                   Make the request to the POST /single-file URL
                 */
                 this.uploading = true
-                HTTTP().post('/upload_photo/'+this.type_upload_photo,
+                HTTTP().post('/upload_photo/' + this.type_upload_photo,
                     formData,
                     {
                         headers: {
@@ -482,46 +502,41 @@
                 });
             },
         },
-        computed:{
-            ...mapState('auth',['nameLogin','tokenLogin']),
-            date_warranty_rules(){
+        computed: {
+            // ...mapState('auth',['nameLogin','tokenLogin']),
+            ...mapState('lists', ['providers', 'departments', 'type_eq']),
+            date_warranty_rules() {
                 const rules = []
 
-                if (this.equipment.noWarranty == false){
-                    const rule =
-                            value => !!value || 'Поле не может быть пустым'
+                if (this.equipment.noWarranty === false) {
+                    const rule = value => !!value || 'Поле не может быть пустым'
 
                     rules.push(rule)
                 }
                 return rules
             },
-            equipment_photo(){
-                let photo_arr = this.equipment.photo.filter((item)=>{
-                   return item.type == 'eq'
+            equipment_photo() {
+                let photo_arr = this.equipment.photo.filter((item) => {
+                    return item.type == 'eq'
                 })
                 return photo_arr
             },
-            warranty_photo(){
-                let photo_arr = this.equipment.photo.filter((item)=>{
+            warranty_photo() {
+                let photo_arr = this.equipment.photo.filter((item) => {
                     return item.type == 'warr'
                 })
                 return photo_arr
             }
         },
         watch: {
-            equipment: {
-                handler: function (val, oldVal) {
-
-                },
-                deep: true
-            }
+            // equipment: {
+            //     handler: function (val, oldVal) {
+            //
+            //     },
+            //     deep: true
+            // }
 
         }
     }
 </script >
 
-<style scoped >
-    .pointer{
-
-    }
-</style >

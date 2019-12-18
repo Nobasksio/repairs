@@ -54,7 +54,6 @@ class DepartmentController {
                     Departments_list[i].parent = null
                 }
 
-
             }
         })
 

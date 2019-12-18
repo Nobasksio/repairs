@@ -90,8 +90,8 @@
 
 <script >
     const axios = require('axios');
-    import HTTTP from '../http';
-    import deleteButton from './delete-button'
+    import HTTTP from '../../http';
+    import deleteButton from '../delete-button'
     export default {
         name: "create",
         components:{
