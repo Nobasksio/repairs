@@ -85,7 +85,7 @@
                 :items="filter_equipments"
                 :page.sync="page"
                 :items-per-page="itemsPerPage"
-
+                :options="{itemsPerPage:50}"
                 class="elevation-1 pb-10"
                 v-model="selected"
                 show-select

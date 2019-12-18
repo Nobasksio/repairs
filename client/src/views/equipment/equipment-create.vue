@@ -284,13 +284,33 @@
                     </v-col >
                 </v-row >
                 <v-row >
-                    <v-col cols="4" >
-                        <v-btn color="primary" class="m-2"
+                    <v-col cols="auto" >
+                        <v-btn color="primary" class="mt-3 "
                                :loading="loading"
+                               v-if="!queue"
                                :disabled="loading || !valid"
                                large @click="create_equipment()" >{{name_button}}
                         </v-btn >
+                        <v-btn color="primary" class="mt-3 "
+                               :loading="loading"
+                               v-else
+                               :disabled="loading || !valid"
+                               large @click="create_queue_equipment()" >Создать {{ queue_num }} шт
+                        </v-btn >
                     </v-col >
+                    <v-col cols="auto">
+                        <v-switch class="m-n10"
+                                v-model="queue"
+                                label="Пакетное создание"
+                        ></v-switch>
+                    </v-col>
+                    <v-col cols="auto"  v-if="queue">
+                        <v-text-field
+                                v-model="queue_num"
+                                label="Колличество"
+                                outlined
+                        ></v-text-field>
+                    </v-col>
                 </v-row >
             </v-container >
         </v-form >
@@ -329,6 +349,8 @@
                 error_alert: false,
                 upload_photo: [],
                 type_upload_photo: null,
+                queue:false,
+                queue_num:1,
                 equipment: {
                     id: null,
                     name: '',
@@ -409,7 +431,9 @@
                     this.loading = false
                     this.succ_alert = true
                     this.name_button = 'сохранить'
-                    this.equipment.id = response.data.id
+                    if (this.queue == false) {
+                        this.equipment.id = response.data.id
+                    }
                 })
                     .catch((error) => {
                         console.log(error);
@@ -417,6 +441,14 @@
                         this.error_alert = true
                     });
             },
+            async create_queue_equipment(){
+                for(let i = 0; i < this.queue_num; i++ ){
+                    this.equipment.id = null
+                    await this.makeUniqNumber()
+                    await this.create_equipment()
+                }
+            },
+
             uploat_photo(type) {
                 this.type_upload_photo = type
                 this.$refs.photo_e.click()
