@@ -69,7 +69,7 @@
             <v-col >
                 <div class="caption text-center" >
                     сумма оборудования <br >
-                    <span class="font-weight-black" >{{ summ_filtred }} руб</span >
+                    <span class="font-weight-black" >{{ new Intl.NumberFormat('ru-RU').format(summ_filtred)  }} руб</span >
                 </div >
             </v-col >
             <v-col >

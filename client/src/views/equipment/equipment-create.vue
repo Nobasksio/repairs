@@ -5,7 +5,7 @@
             <v-card >
                 <v-img
                         class="pointer"
-                        :src="'http://127.0.0.1:3334/uploads/'+show_photo.link" />
+                        :src="'http://repairs.rest38.ru/uploads/'+show_photo.link" />
                 <v-card-actions >
                     <div class="flex-grow-1" ></div >
                     <v-btn icon align="center" @click="delete_photo(show_photo)" >
@@ -58,13 +58,14 @@
                     <v-card
                             max-width="100"
                             class="pointer"
+                            :key="photo_item.id"
                             v-for="photo_item in equipment_photo"
                             @click="show_big_photo(photo_item)"
                     >
                         <v-img
                                 max-width="100"
                                 class="pointer"
-                                :src="'http://127.0.0.1:3334/uploads/'+photo_item.link" />
+                                :src="'http://repairs.rest38.ru/uploads/'+photo_item.link" />
                     </v-card >
 
                 </v-row >
@@ -217,13 +218,14 @@
                     <v-card
                             max-width="100"
                             class="pointer"
+                            :key="`photo_${photo_item.key}`"
                             v-for="photo_item in warranty_photo"
                             @click="show_big_photo(photo_item)"
                     >
                         <v-img
                                 max-width="100"
                                 class="pointer"
-                                :src="'http://127.0.0.1:3334/uploads/'+photo_item.link" />
+                                :src="'http://repairs.rest38.ru/uploads/'+photo_item.link" />
                     </v-card >
 
                 </v-row >

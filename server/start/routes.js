@@ -31,8 +31,6 @@ Route.post('api/equipment/checknumber', 'EquipmentController.checkNumber')
 Route.get('/api/equipment/:id', 'EquipmentController.equipment')
 Route.delete('/api/equipment/:id', 'EquipmentController.delete')
 
-
-
 Route.get('/api/repair', 'RepairController.list')
 Route.post('/api/repair', 'RepairController.create')
 Route.get('/api/repair/:id', 'RepairController.repair')
@@ -64,3 +62,5 @@ Route.delete('/api/group/:id','TypeEqController.delete')
 
 Route.post('/api/upload_photo/:type', 'EquipmentController.upload')
 Route.delete('/api/photo/:id', 'EquipmentController.delete_photo')
+
+Route.post('/api/inventory','InventoryController.create')

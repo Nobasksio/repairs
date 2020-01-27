@@ -7,7 +7,7 @@ const Department = use('App/Models/Department')
 const Photo = use('App/Models/Photo')
 const Dbloger = use('App/Helpers/dbloger.js')
 
-var moment = require('moment');
+let moment = require('moment');
 
 const Helpers = use('Helpers')
 

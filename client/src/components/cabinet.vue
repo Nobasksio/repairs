@@ -105,11 +105,20 @@
                     route:'/transfer/create/'
                 },
                 {
+                    title: "Инвентаризации",
+                    icon: 'mdi-format-list-checkbox',
+                    route:'/inventory'
+                },
+                {
+                    title: "Создать инвентарзиацию",
+                    icon: '',
+                    route:'/inventory/create'
+                },
+                {
                     title: "Настройки",
                     icon: 'settings_applications',
                     route:'/settings'
                 },
-
 
             ]
         }),
