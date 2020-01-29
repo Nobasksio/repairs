@@ -64,3 +64,4 @@ Route.post('/api/upload_photo/:type', 'EquipmentController.upload')
 Route.delete('/api/photo/:id', 'EquipmentController.delete_photo')
 
 Route.post('/api/inventory','InventoryController.create')
+Route.get('/api/inventory','InventoryController.list')

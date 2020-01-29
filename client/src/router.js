@@ -48,6 +48,7 @@ export default new Router({
 
               {path: '/register', component: () => import('./views/register-form.vue'),},
               {path: '/inventory', component: () => import('./views/inventory/inventories.vue'),},
+              {path: '/inventory/:id', component: () => import('./views/inventory/inventory.vue'),},
               {path: '/inventory/create', component: () => import('./views/inventory/inventory-create.vue'),},
 
           ]
