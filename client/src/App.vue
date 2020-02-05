@@ -6,12 +6,10 @@
 
 <script >
     import indexLayout from './components/index-layout';
-
     export default {
         name: 'App',
 
         components: {
-
         },
 
     };

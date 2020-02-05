@@ -47,10 +47,10 @@ export default new Router({
               {path: '/provider/edit/:id', component: () => import('./views/provider/provider-create'),props: { load: true}},
 
               {path: '/register', component: () => import('./views/register-form.vue'),},
-              {path: '/inventory', component: () => import('./views/inventory/inventories.vue'),},
-              {path: '/inventory/:id', component: () => import('./views/inventory/inventory.vue'),},
-              {path: '/inventory/create', component: () => import('./views/inventory/inventory-create.vue'),},
 
+              {path: '/inventory', component: () => import('./views/inventory/inventories.vue'),},
+              {path: '/inventory/create', component: () => import('./views/inventory/inventory-create.vue'),},
+              {path: '/inventory/:id', component: () => import('./views/inventory/inventory.vue'),},
           ]
       },
       {path: '/barcodes/', name:"barcode", component: () => import('./views/barcode-print.vue'),props:true},

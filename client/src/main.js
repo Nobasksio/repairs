@@ -15,7 +15,13 @@ import router from './router';
 import store from './store/index.js';
 import vuetify from './plugins/vuetify';
 import indexLayout from './components/index-layout';
+import HTTP from './http';
 
+Vue.use({
+    install(Vue){
+        Vue.prototype.HTTP = HTTP
+}
+})
 
 Vue.component('index-layout',indexLayout);
 
@@ -27,5 +33,6 @@ new Vue({
   router,
   store,
   vuetify,
+
   render: h => h(App),
 }).$mount('#app');

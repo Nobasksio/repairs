@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class InventoryItems extends Model {
+    Equipments(){
+        return this
+            .hasOne('App/Models/Equipment')
+
+    }
 }
 
 module.exports = InventoryItems
