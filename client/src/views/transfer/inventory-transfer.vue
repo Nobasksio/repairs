@@ -1,7 +1,6 @@
 <template >
     <div >
 
-        <h1 class="display-1" >Перемещение оборудования</h1 >
         <v-form v-model="valid" >
 
             <v-container class="px-4 py-4 align-self-start ml-0" >
@@ -66,6 +65,7 @@
                                 label="Подразделение на"
                                 :items="filtred_departments_to"
                                 v-model="transfer.to_dep_id"
+                                readonly
                                 :rules="[v => !!v || 'Подразделение не может быть пустым']"
                                 item-text="name"
                                 item-value="id"
@@ -169,7 +169,7 @@
                         <v-btn color="primary" class="m-2"
                                :loading="loading"
                                :disabled="loading || !valid"
-                               large @click="create_transfer()" >{{name_button}}
+                               large @click="proxyCreateTransfer()" >{{name_button}}
                         </v-btn >
                     </v-col >
                 </v-row >
@@ -178,97 +178,54 @@
     </div >
 </template >
 
-
 <script >
     import baseTransfer from './base-transfer'
 
     export default {
-        name: "transfer-create",
-        data: () => {
-            return {
-                // id_page: null,
-                // modal: false,
-                menu: false,
-                name_button: 'Сохранить',
-                menu2: false,
-                valid: false,
-                loading: false,
-                succ_alert: false,
-                succ_text: 'Оборудование успешно добавлено',
-                error_alert: false,
-                search_name: null,
-                search_in_number_uniq: null,
-                search_from_dep_id: null,
-                filter: {
-                    department: null,
-                },
-                departments: [],
-                equipments: [],
-                transfer: {
-                    id: null,
-                    from_dep_id: null,
-                    to_dep_id: null,
-                    equipment: {id: null},
-                    user_id: null,
-                    description: null,
-                    isDelete: false,
-                    date_start: new Date().toISOString().substr(0, 10),
-                    date_finish: new Date().toISOString().substr(0, 10),
-                },
-                rules: {
-                    required: value => !!value || 'Поле не может быть пустым',
-                    min: v => v.length >= 3 || 'В названии не может быть меньше 3 символов',
-                },
-            }
+        name: "inventory-transfer",
+        props: {
+            department_to: Number,
+            inventory: Object,
+        },
+        beforeMount() {
+            this.transfer.to_dep_id = this.department_to
         },
         mixins: [baseTransfer],
         methods: {
+            proxyCreateTransfer() {
+                let department = this.getDepartment(this.department_to)
+                this.transfer.description = `Инвентаризация от ${this.inventory.created_at} на подразделении ${department.name} \n ${this.transfer.description}`
 
-        },
-        watch: {
-
-        },
-        computed: {
-            filter_equipments() {
-                let filtred;
-
-                if (this.filter.department != null) {
-
-                    filtred = this.equipments.filter((item) => {
-
-                        let step = false;
-
-                        if (item.department_id == this.filter.department) {
-
-                            step = true
-
-                        }
-
-                        return step
-
-                    })
-                } else {
-
-                    filtred = this.equipments
-                }
-
-                return filtred
+                this.create_transfer()
+                this.addEquipmentToInventory()
             },
-            filtred_departments_to() {
-                let filtred;
-                if (this.transfer.equipment.id != null) {
-                    filtred = this.departments.filter((item) => {
+            addEquipmentToInventory() {
+                this.HTTP().post('/addInventoryItem',
+                    {
+                        intentoryItem: {
+                            inventory_id: this.inventory.id,
+                            equipment_id: this.transfer.equipment.id,
+                            status: true,
+                            cause: 2,
+                            isDelete: false
+                        }
+                    }).then(({data}) => {
+                    this.$emit('addInventoryItem',
+                        {
+                            inventory_item: data.inventory_item,
+                            equipment: data.equipment
+                        }
+                    )
 
-                        return item.id != this.transfer.equipment.department_id
+                }).catch((error) => {
+                    this.succ_alert = false
+                    this.error_alert = true
+                    console.log(error);
+                });
 
-                    })
-                } else {
-                    filtred = this.departments
-                }
-
-                return filtred
             }
-        }
+        },
+        watch: {}
     }
 </script >
 

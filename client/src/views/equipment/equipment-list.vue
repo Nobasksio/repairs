@@ -151,9 +151,6 @@
 <script >
     import {mapState, mapMutations, mapActions} from 'vuex';
 
-
-
-
     const axios = require('axios');
     import HTTTP from '../../http';
 
