@@ -8,21 +8,24 @@
             <div class="subtitle-1" >Антрекот КМ (21.10.2020)</div >
             <v-container class="fill-height" fluid >
                 <v-list class="w-100" >
-                    <v-list-group v-for="(item_category,category) in groupSet" >
+                    <v-list-group :key="`groupClass${category}`" v-for="(item_category,category) in groupSet" >
                         <template v-slot:activator >
-                            <v-list-item-title class="font-weight-bold">{{category}} ({{ countCategory(item_category) }} / {{countCategoryCheck(item_category)}} )</v-list-item-title >
+                            <v-list-item-title class="font-weight-bold" >{{category}} ({{ countCategory(item_category)
+                                }} / {{countCategoryCheck(item_category)}} )
+                            </v-list-item-title >
                         </template >
 
                         <v-list-group
                                 no-action
                                 sub-group
                                 v-if="name_arr.groups.length>1"
-                                v-for="name_arr in item_category"
+                                :key="`groupName${index}`"
+                                v-for="(name_arr,index) in item_category"
                         >
                             <template v-slot:activator >
 
-                                    <v-list-item-title >{{name_arr.name}} {{name_arr.groups.length}} шт
-                                    </v-list-item-title >
+                                <v-list-item-title >{{name_arr.name}} {{name_arr.groups.length}} шт
+                                </v-list-item-title >
 
 
                             </template >
@@ -39,6 +42,8 @@
                                     </v-list-item-content >
                                     <v-list-item-action @click="toogle_group(name_arr)" >
                                         <v-checkbox
+
+                                                :readonly="inventory.isClose"
                                                 v-model="name_arr.status"
                                                 color="primary"
                                         ></v-checkbox >
@@ -46,17 +51,20 @@
                                 </template >
                             </v-list-item >
                             <v-list-item
+                                    :key="`groupName${item.id}`"
                                     v-for="item in name_arr.groups"
                             >
                                 <template >
                                     <v-list-item-content >
                                         <v-list-item-title
-                                        class="pl-2"> {{ item.name }}  <span class="grey--text text-12">{{ item.in_number_uniq}}</span>
+                                                class="pl-2" > {{ item.equipment.name }} <span class="grey--text text-12" >{{ item.equipment.in_number_uniq}}</span >
                                         </v-list-item-title >
                                     </v-list-item-content >
                                     <v-list-item-action >
                                         <v-checkbox
-                                                v-model="item.inventory_row.status"
+                                                :readonly="inventory.isClose"
+                                                :input-value="item.status"
+                                                @change="updateItemStatus(item)"
                                                 color="primary"
                                         ></v-checkbox >
                                     </v-list-item-action >
@@ -64,19 +72,23 @@
                             </v-list-item >
                         </v-list-group >
                         <template v-else >
-                            <v-list-item v-for="item in name_arr.groups" >
+                            <v-list-item
+                                    :key="`groupName${item.id}`"
+                                    v-for="item in name_arr.groups" >
                                 <template >
                                     <v-list-item-content >
                                         <v-list-item-title
                                                 class="pl-2"
-                                        > {{ item.name }}  <span class="grey--text text-12">{{ item.in_number_uniq}}</span>
+                                        > {{ item.equipment.name }} <span
+                                                class="grey--text text-12" >{{ item.equipment.in_number_uniq}}</span >
                                         </v-list-item-title >
                                     </v-list-item-content >
                                     <v-list-item-action >
                                         <v-checkbox
-                                                v-model="item.inventory_row.status"
+                                                :readonly="inventory.isClose"
+                                                :input-value="item.status"
                                                 color="primary"
-
+                                                @change="updateItemStatus(item)"
                                         ></v-checkbox >
                                     </v-list-item-action >
                                 </template >
@@ -152,14 +164,14 @@
                                             class="mr-2 mb-n10"
                                     ></v-autocomplete >
                                 </v-col >
-                                <v-col>
+                                <v-col >
                                     <v-btn
                                             @click="clean"
                                             class="mx-4"
                                     >
                                         Очистить
                                     </v-btn >
-                                </v-col>
+                                </v-col >
                             </v-row >
                         </v-card-text >
 
@@ -197,7 +209,7 @@
                     </v-list-item >
                     <v-list-item >
                         <v-list-item-content >
-                            <v-list-item-title >{{planPcs - checedPcs}} ед.</v-list-item-title >
+                            <v-list-item-title >{{ planPcs - checedPcs }} ед.</v-list-item-title >
                             <v-list-item-subtitle >Не найдено</v-list-item-subtitle >
                         </v-list-item-content >
                     </v-list-item >
@@ -214,7 +226,7 @@
                     <v-list-item >
                         <v-list-item-content >
                             <v-row >
-                                <v-col cols="4" >
+                                <v-col cols="6" >
                                     <v-subheader class="pl-0" >Чтобы завершить инвентаризацию напишите слов «конец» в
                                         поле ниже
                                     </v-subheader >
@@ -233,9 +245,10 @@
                 </v-list >
                 <v-card-actions >
                     <v-row >
-                        <v-col cols="4" class="pl-6">
+                        <v-col cols="4" class="pl-6" >
                             <v-btn
                                     color="success"
+                                    @click="closeInventory"
                                     :disabled="endCheck" >Завершить
                             </v-btn >
                         </v-col >
@@ -243,6 +256,59 @@
                 </v-card-actions >
             </v-card >
 
+        </v-dialog >
+        <v-dialog
+                v-model="showSyncDialog"
+                width="600"
+        >
+            <v-card >
+                <v-card-title
+                        class="headline grey lighten-2"
+                        primary-title
+                >
+                    Синхронизация данных
+                </v-card-title >
+
+                <v-card-text class="pt-5" >
+                    <p>У вас сохранена локальная копия данных данной инвентаризации.</p>
+                    <p> Поселдний обмен с сервером был 15 минут назад.</p>
+                    Хотите выгрузить локальные данные на сервер? (на сервере сохранится то что у вас в планшете)
+                    <p>Или хотите скачать данные с сервера? (на планшет загрузятся данные с сервера)</p>
+                </v-card-text >
+
+                <v-divider ></v-divider >
+
+                <v-card-actions >
+                    <v-row >
+                        <v-col >
+                            <v-btn
+                                    color="success"
+                                    @click="uploadInventoryData()" >
+                                Загрузить
+                                <v-icon>mdi-upload</v-icon>
+                            </v-btn >
+                        </v-col >
+                        <v-col class="text-center" >
+                            <v-btn
+                                    color=""
+                                    @click="showSyncDialog = false" >
+                                Решить позже
+                            </v-btn >
+                        </v-col >
+                        <v-col class="text-right" >
+
+                            <v-btn
+                                    color="error"
+                                    @click="downloadInvData()" >
+                                Скачать
+                                <v-icon>mdi-download</v-icon>
+                            </v-btn >
+                        </v-col >
+                    </v-row >
+
+
+                </v-card-actions >
+            </v-card >
         </v-dialog >
         <v-dialog v-model="dialog_add" fullscreen hide-overlay transition="dialog-bottom-transition" >
 
@@ -255,18 +321,19 @@
                     <v-spacer ></v-spacer >
 
                 </v-toolbar >
-                <v-card-text>
+                <v-card-text >
                     <inventory-transfer
                             :department_to="inventory.department_id"
                             @addInventoryItem="addInventoryItem"
-                            :inventory ='inventory'></inventory-transfer>
-                </v-card-text>
+                            :inventory='inventory' ></inventory-transfer >
+                </v-card-text >
 
                 <v-card-actions >
                     <v-row >
-                        <v-col cols="4" class="pl-6">
+                        <v-col cols="4" class="pl-6" >
                             <v-btn
                                     color="success"
+                                    @click=""
                                     :disabled="endCheck" >Завершить
                             </v-btn >
                         </v-col >
@@ -281,23 +348,23 @@
 <script >
     import inventoryTransfer from '../transfer/inventory-transfer'
     import baseGetters from '../../mixins/base-getters'
+    import {mapState, mapMutations, mapActions} from 'vuex';
+
     export default {
         name: "inventory",
-        components:{
+        components: {
             inventoryTransfer
         },
-        mixins:[baseGetters],
+        mixins: [baseGetters],
         mounted() {
-            this.HTTP().get('/inventory/' + this.$route.params.id)
-                .then((response) => {
+            if (this.inventory == null || this.isSync) {
+                console.log('may')
+                this.getINventory(this.$route.params.id);
+            } else if (!this.isSync) {
+                this.showSyncDialog = true;
+            }
 
-                    this.inventory = response.data.inventory;
-                    this.equipments.splice(0, this.equipments.length, ...response.data.inventoryEquipment);
 
-                })
-                .catch((error) => {
-                    console.log(error);
-                })
             this.HTTP().get('/lists')
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
@@ -309,37 +376,34 @@
         },
         data() {
             return {
-                inventory: {},
-                equipments: [],
+
+                showSyncDialog: false,
                 myau: false,
                 valid: false,
                 dialog_end: false,
-                dialog_add:false,
+                dialog_add: false,
                 end_text: '',
-                numberUniqFilter:null,
-                nameFilter:null,
+                numberUniqFilter: null,
+                nameFilter: null,
             }
         },
         methods: {
-            toogle_group(item_group) {
-
-
-                item_group.groups.forEach((item) => {
-                    item.inventory_row.status = item_group.status
-                })
+            ...mapActions('inventory', ['getINventory','uploadInventory','updateItemStatus']),
+            ...mapMutations('inventory', ['updateInventoryNameGroupStatus','setInventoryClose']),
+            toogle_group(name_arr) {
+                this.updateInventoryNameGroupStatus(name_arr)
+            },
+            downloadInvData(){
+                this.getINventory(this.$route.params.id);
+            },
+            uploadInventoryData(){
+                this.uploadInventory(this.$route.params.id);
             },
             //перенести в общий компонент
             clean() {
                 this.numberUniqFilter = null
                 this.nameFilter = null
 
-            },
-            get_name(equipment_id) {
-                let equipment = this.equipments.filter((item) => {
-                    return item.id == equipment_id
-                })
-
-                return equipment[0].name
             },
             get_status(equipment) {
                 let equipment_output = this.inventory.InventoryItems.filter((item) => {
@@ -348,26 +412,23 @@
 
                 return equipment_output[0]
             },
-            addInventoryItem(data){
+            addInventoryItem(data) {
                 this.inventory.InventoryItems.push(data.inventory_item)
                 this.equipments.push(data.equipment)
             },
             groupName(equipments) {
-                let group = {}, sort_group_alp = [], sort_len = []
+                let group = {}, sort_group_alp = [], sort_len = [];
                 equipments.forEach((item) => {
-                    if (group[item.name] !== undefined) {
-                        item.inventory_row = this.get_status(item)
-                        group[item.name]['groups'].push(item)
+                    if (group[item.equipment.name] !== undefined) {
+                        group[item.equipment.name]['groups'].push(item)
                     } else {
-                        group[item.name] = {
+                        group[item.equipment.name] = {
                             groups: [],
                             status: false,
-                            name: item.name
+                            name: item.equipment.name
                         }
-                        item.inventory_row = this.get_status(item)
-                        group[item.name]['groups'].push(item)
+                        group[item.equipment.name]['groups'].push(item)
                     }
-
                 })
 
                 for (let index in group) {
@@ -379,38 +440,48 @@
 
                 }
 
-
                 return sort_len
             },
-            countCategory(itemGroup){
+            countCategory(itemGroup) {
                 let count = 0;
 
-                itemGroup.forEach((item)=>{
+                itemGroup.forEach((item) => {
                     count += item.groups.length
                 })
 
                 return count
 
             },
-            countCategoryCheck(itemGroup){
+            countCategoryCheck(itemGroup) {
                 let count = 0;
 
-                itemGroup.forEach((item)=>{
+                itemGroup.forEach((item) => {
 
 
-                    item.groups.forEach((itemEquipment)=>{
-                        if (itemEquipment.inventory_row.status == true) count++
+                    item.groups.forEach((itemEquipment) => {
+                        if (itemEquipment.status == true) count++
                     })
                 })
 
                 return count
+            },
+            closeInventory() {
+                this.setInventoryClose(true)
+                this.HTTP().put('/inventory/' + this.$route.params.id, {
+                    inventory:this.inventory
+                }).then(({data}) => {
+
+
+
+                })
             }
         },
         computed: {
+            ...mapState('inventory', ['inventory', 'isSync', 'dateSync', 'equipments']),
             groupSet() {
                 let groups = {}
                 this.filter_equipments.forEach((item) => {
-                    let {name } = this.getGroup(item.type_eq_id)
+                    let {name} = this.getGroup(item.equipment.type_eq_id)
                     if (groups[name] !== undefined) {
                         groups[name].push(item)
                     } else {
@@ -431,40 +502,38 @@
                 return this.end_text.toLowerCase() != 'конец'
             },
             filter_equipments() {
-                let filtred = this.equipments;
-
+                let filtred = this.inventory.InventoryItems;
 
                 if (this.nameFilter != null) {
                     filtred = filtred.filter((item) => {
-                        return item.id == this.nameFilter
+                        return item.equipment.id == this.nameFilter
                     })
 
                 }
 
                 if (this.numberUniqFilter != null) {
                     filtred = filtred.filter((item) => {
-                        return item.id == this.numberUniqFilter
+                        return item.equipment.id == this.numberUniqFilter
                     })
 
                 }
 
-
                 return filtred
             },
-            planPcs(){
-                return this.inventory.InventoryItems.filter((item)=>{
+            planPcs() {
+                return this.inventory.InventoryItems.filter((item) => {
                     return item.cause == 1
                 }).length
 
             },
-            addedPcs(){
-                return this.inventory.InventoryItems.filter((item)=>{
+            addedPcs() {
+                return this.inventory.InventoryItems.filter((item) => {
                     return item.cause == 2
                 }).length
 
             },
-            checedPcs(){
-                return this.inventory.InventoryItems.filter((item)=>{
+            checedPcs() {
+                return this.inventory.InventoryItems.filter((item) => {
                     return (item.status == true && item.cause == 1)
                 }).length
 
@@ -477,7 +546,8 @@
     .w-100 {
         width: 100%;
     }
-    .text-12{
+
+    .text-12 {
         font-size: 12px;
     }
 </style >

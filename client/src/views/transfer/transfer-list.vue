@@ -5,7 +5,7 @@
                 :items="transfer"
                 :page.sync="page"
                 :items-per-page="itemsPerPage"
-                hide-default-footer
+                show-select
                 class="elevation-1"
                 @page-count="pageCount = $event"
         >

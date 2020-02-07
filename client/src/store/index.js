@@ -6,6 +6,7 @@ import Vuex from 'vuex';
 import filter from './filter.js';
 import auth from './auth';
 import lists from './lists';
+import inventory from './inventory';
 
 
 Vue.use(Vuex);
@@ -20,7 +21,8 @@ export default new Vuex.Store({
     modules:{
         filter,
         auth,
-        lists
+        lists,
+        inventory
     },
     mutations: {
     },
@@ -29,8 +31,7 @@ export default new Vuex.Store({
         },
     plugins:[
         createPersistedState({
-            key: 'filter',
-            paths:['filter','auth','lists']
+            paths:['filter','auth','lists','inventory']
         })
     ]
 });

@@ -379,7 +379,6 @@
         },
         beforeMount() {
             this.fill_lists();
-
         },
         methods: {
             ...mapMutations('lists', [
