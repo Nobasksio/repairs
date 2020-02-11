@@ -69,6 +69,9 @@ export default {
         setEquipments(state, payload) {
             state.equipments.splice(0, state.equipments.length, ...payload)
         },
+        addInventoryItem(state, payload) {
+            state.inventory.InventoryItems.push(payload)
+        },
         addEquipment(state, payload) {
             state.equipments.push(payload)
         },

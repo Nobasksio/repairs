@@ -103,7 +103,7 @@ class DepartmentController {
                save new state and save history
             */
             new_state = JSON.stringify(department)
-            dbloger.createRecord(old_state,new_state,user.id,'department')
+            dbloger.createRecord(old_state,new_state,user.id,'department',department.id)
             return response.json({massage: 'всё ок'})
         } catch (e) {
             console.log(e)
@@ -127,7 +127,7 @@ class DepartmentController {
         await department.save()
 
         new_state = JSON.stringify(department)
-        dbloger.createRecord(old_state,new_state,user.id,'department')
+        dbloger.createRecord(old_state,new_state,user.id,'department',department.id)
 
         return response.json({
             department: department,

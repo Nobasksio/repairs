@@ -113,7 +113,7 @@ class EquipmentController {
          save new state and save history
         */
         new_state = JSON.stringify(equipment)
-        dbloger.createRecord(old_state,new_state,user.id,'equipment')
+        dbloger.createRecord(old_state,new_state,user.id,'equipment',equipment.id)
 
         for (let i=0; i < equipment_param.photo.length; i++){
 
@@ -188,7 +188,7 @@ class EquipmentController {
         await equipment.save()
 
         new_state = JSON.stringify(equipment)
-        dbloger.createRecord(old_state,new_state,user.id,'equipment')
+        dbloger.createRecord(old_state,new_state,user.id,'equipment',equipment.id)
 
         return response.json({
             equipment:equipment,

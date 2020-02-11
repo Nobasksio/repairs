@@ -97,7 +97,7 @@ class RepairController {
         await repair.save()
 
         new_state = JSON.stringify(repair)
-        dbloger.createRecord(old_state,new_state,user.id,'repairs')
+        dbloger.createRecord(old_state,new_state,user.id,'repairs',repair.id)
 
 
 
@@ -118,7 +118,7 @@ class RepairController {
         await repairs.save()
 
         new_state = JSON.stringify(repairs)
-        dbloger.createRecord(old_state,new_state,user.id,'repairs')
+        dbloger.createRecord(old_state,new_state,user.id,'repairs',repairs.id)
 
         return response.json({
             repairs:repairs,

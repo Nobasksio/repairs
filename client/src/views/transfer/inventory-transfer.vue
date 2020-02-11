@@ -11,7 +11,7 @@
                                 v-model="search_name"
                                 label="Название"
                                 placeholder="например Чайник"
-                                :items="filter_equipments"
+                                :items="filter_equipments_inventory"
                                 item-text="name"
                                 item-value="id"
                                 outlined
@@ -34,7 +34,7 @@
                                 v-model="search_in_number_uniq"
                                 label="Внутренний инвентарный номер"
                                 placeholder="например 12345"
-                                :items="filter_equipments"
+                                :items="filter_equipments_inventory"
                                 item-text="in_number_uniq"
                                 item-value="id"
                                 :rules="[v => !!v || 'Подразделение не может быть пустым']"
@@ -180,6 +180,7 @@
 
 <script >
     import baseTransfer from './base-transfer'
+    import {mapState, mapMutations, mapActions} from 'vuex';
 
     export default {
         name: "inventory-transfer",
@@ -192,6 +193,7 @@
         },
         mixins: [baseTransfer],
         methods: {
+            ...mapMutations('inventory', ['addEquipment', 'addInventoryItem']),
             proxyCreateTransfer() {
                 let department = this.getDepartment(this.department_to)
                 this.transfer.description = `Инвентаризация от ${this.inventory.created_at} на подразделении ${department.name} \n ${this.transfer.description}`
@@ -210,18 +212,27 @@
                             isDelete: false
                         }
                     }).then(({data}) => {
-                    this.$emit('addInventoryItem',
-                        {
-                            inventory_item: data.inventory_item,
-                            equipment: data.equipment
-                        }
-                    )
+                    if (data.status == 'added') {
+                        this.addEquipment(data.equipment)
+                        this.addInventoryItem(data.inventory_item)
+                    }
 
                 }).catch((error) => {
                     this.succ_alert = false
                     this.error_alert = true
                     console.log(error);
                 });
+
+            }
+        },
+        computed: {
+            filter_equipments_inventory() {
+                //filter_equipments mixin's computed property
+                let filtred = this.filter_equipments.filter((item) => {
+                    return item.department_id != this.transfer.to_dep_id
+                })
+
+                return filtred
 
             }
         },

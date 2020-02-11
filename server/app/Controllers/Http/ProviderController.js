@@ -53,7 +53,7 @@ class ProviderController {
              save new state and save history
             */
             new_state = JSON.stringify(provider)
-            dbloger.createRecord(old_state,new_state,user.id,'provider')
+            dbloger.createRecord(old_state,new_state,user.id,'provider',provider.id)
 
 
             return response.json({ massage: 'всё ок', status:1,id:provider.id, entity:provider})
@@ -77,7 +77,7 @@ class ProviderController {
         await provider.save()
 
         new_state = JSON.stringify(provider)
-        dbloger.createRecord(old_state,new_state,user.id,'provider')
+        dbloger.createRecord(old_state,new_state,user.id,'provider',provider.id)
 
         return response.json({
             provider:provider,

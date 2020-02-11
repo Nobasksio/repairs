@@ -4,7 +4,7 @@
             :items="filter_inventories"
             :page.sync="page"
             :items-per-page="itemsPerPage"
-            hide-default-footer
+
             class="elevation-1 "
             @page-count="pageCount = $event"
     >
@@ -13,6 +13,15 @@
         </template >
         <template v-slot:item.date_plan="{ item }" >
             {{ date_format(item.date_plan)}}
+        </template >
+        <template v-slot:item.isClose="{ item }" >
+            <v-chip
+                    class="ma-2"
+                    :color="item.isClose ? `green` : `red` "
+                    text-color="white"
+            >
+                {{item.isClose ? "закрыта" : "не закрыта" }}
+            </v-chip>
         </template >
         <template v-slot:item.date_finish="{ item }" >
             {{ date_format(item.date_finish)}}
@@ -79,6 +88,7 @@
                     },
                     { text: 'Дата', value: 'date_plan' },
                     { text: 'Отвественный', value: 'date_start' },
+                    { text: 'Статус', value: 'isClose' },
                     { text: 'Корректировок', value: 'provider_id' },
                     { text: 'Actions', value: 'action', sortable: false,align: 'center', },
                 ],
@@ -103,8 +113,6 @@
                 } else {
                     filtred = this.inventories
                 }
-
-
 
                 if (this.filter.date_start != null) {
                     console.log(moment(this.filter.date_start))

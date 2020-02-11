@@ -45,7 +45,7 @@ class TypeEqController {
                save new state and save history
             */
             new_state = JSON.stringify(group)
-            dbloger.createRecord(old_state,new_state,user.id,'group')
+            dbloger.createRecord(old_state,new_state,user.id,'group',group.id)
 
             return response.json({ massage: 'всё ок', status:1})
         } catch (e) {
@@ -67,7 +67,7 @@ class TypeEqController {
         await group.save()
 
         new_state = JSON.stringify(group)
-        dbloger.createRecord(old_state,new_state,user.id,'group')
+        dbloger.createRecord(old_state,new_state,user.id,'group',group.id)
 
         return response.json({
             group:group,

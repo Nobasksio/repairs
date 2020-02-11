@@ -4,9 +4,32 @@
             fluid
     >
         <v-form v-model="valid" >
-            <h1 class="display-1" >Инвентаризация </h1 >
-            <div class="subtitle-1" >Антрекот КМ (21.10.2020)</div >
+
             <v-container class="fill-height" fluid >
+                <v-container >
+                    <h1 class="display-1" >Инвентаризация </h1 >
+                    <div class="subtitle-1" >Антрекот КМ (21.10.2020)</div >
+                    <v-alert prominent type="warning" v-if="inventory.isClose" >
+                        <v-row align="center" >
+                            <v-col cols="auto" >
+                                Инвентаризация закрыта
+                                Чтобы внести изменения разблокируйте её
+                            </v-col >
+                            <v-col class="shrink" >
+
+
+                                <v-btn
+
+                                        @click="openInventory"
+                                >Разблокировать
+                                </v-btn >
+                            </v-col >
+                        </v-row >
+                    </v-alert >
+                    <h2 class="title" >Оборудование на момент проведения: </h2 >
+                </v-container >
+
+
                 <v-list class="w-100" >
                     <v-list-group :key="`groupClass${category}`" v-for="(item_category,category) in groupSet" >
                         <template v-slot:activator >
@@ -57,7 +80,8 @@
                                 <template >
                                     <v-list-item-content >
                                         <v-list-item-title
-                                                class="pl-2" > {{ item.equipment.name }} <span class="grey--text text-12" >{{ item.equipment.in_number_uniq}}</span >
+                                                class="pl-2" > {{ item.equipment.name }} <span
+                                                class="grey--text text-12" >{{ item.equipment.in_number_uniq}}</span >
                                         </v-list-item-title >
                                     </v-list-item-content >
                                     <v-list-item-action >
@@ -99,6 +123,23 @@
                     </v-list-group >
                 </v-list >
 
+                <v-container >
+                    <h2 class="title pb-3" >Излишки: </h2 >
+                    <v-card
+                            class="w-100"
+
+                            tile
+                    >
+                        <v-list-item :key="`added${item.id}`" v-for="item in added_equipments" >
+                            <v-list-item-content >
+                                <v-list-item-title >{{ item.equipment.name }}</v-list-item-title >
+                            </v-list-item-content >
+                        </v-list-item >
+
+                    </v-card >
+
+                </v-container >
+
                 <div class="py-5" >
                     <v-btn
                             @click="dialog_end = !dialog_end"
@@ -113,6 +154,12 @@
                     >
                         Добавить излишек
                     </v-btn >
+                    <deleteButton
+                            entity_name_ru="Инвентаризация"
+                            entity_name_eng="inventory"
+                            go_to="inventory"
+                            :want_delete_id="inventory.id"
+                    ></deleteButton>
                 </div >
 
                 <v-footer
@@ -135,8 +182,8 @@
                                             label="Название"
                                             placeholder="например Чайник"
                                             :items="filter_equipments"
-                                            item-text="name"
-                                            item-value="id"
+                                            item-text="equipment.name"
+                                            item-value="equipment.id"
                                             outlined
                                             solo
                                             class="mr-2 mb-n7"
@@ -144,7 +191,8 @@
                                         <template v-slot:item="data" >
                                             <template >
                                                 <v-list-item-content >
-                                                    <v-list-item-title v-html="data.item.name" ></v-list-item-title >
+                                                    <v-list-item-title
+                                                            v-html="data.item.equipment.name" ></v-list-item-title >
 
                                                 </v-list-item-content >
                                             </template >
@@ -157,12 +205,23 @@
                                             label="внутренний инвентарный номер"
                                             placeholder="например 12345"
                                             :items="filter_equipments"
-                                            item-text="in_number_uniq"
-                                            item-value="id"
+                                            item-text="equipment.in_number_uniq"
+                                            item-value="equipment.id"
                                             outlined
                                             solo
                                             class="mr-2 mb-n10"
-                                    ></v-autocomplete >
+                                    >
+                                        <template v-slot:item="data" >
+                                            <template >
+                                                <v-list-item-content >
+                                                    <v-list-item-title
+                                                            v-html="data.item.equipment.in_number_uniq" ></v-list-item-title >
+
+                                                </v-list-item-content >
+                                            </template >
+                                        </template >
+
+                                    </v-autocomplete >
                                 </v-col >
                                 <v-col >
                                     <v-btn
@@ -244,7 +303,13 @@
                     </v-list-item >
                 </v-list >
                 <v-card-actions >
+
                     <v-row >
+                        <v-col cols="12" class="pl-6" v-if="showSuccessClosed" >
+                            <v-alert type="success" >
+                                Инвентарзация успешно закрыта
+                            </v-alert >
+                        </v-col >
                         <v-col cols="4" class="pl-6" >
                             <v-btn
                                     color="success"
@@ -252,8 +317,10 @@
                                     :disabled="endCheck" >Завершить
                             </v-btn >
                         </v-col >
+
                     </v-row >
                 </v-card-actions >
+
             </v-card >
 
         </v-dialog >
@@ -270,10 +337,10 @@
                 </v-card-title >
 
                 <v-card-text class="pt-5" >
-                    <p>У вас сохранена локальная копия данных данной инвентаризации.</p>
-                    <p> Поселдний обмен с сервером был 15 минут назад.</p>
+                    <p >У вас сохранена локальная копия данных данной инвентаризации.</p >
+                    <p > Поселдний обмен с сервером был 15 минут назад.</p >
                     Хотите выгрузить локальные данные на сервер? (на сервере сохранится то что у вас в планшете)
-                    <p>Или хотите скачать данные с сервера? (на планшет загрузятся данные с сервера)</p>
+                    <p >Или хотите скачать данные с сервера? (на планшет загрузятся данные с сервера)</p >
                 </v-card-text >
 
                 <v-divider ></v-divider >
@@ -285,7 +352,7 @@
                                     color="success"
                                     @click="uploadInventoryData()" >
                                 Загрузить
-                                <v-icon>mdi-upload</v-icon>
+                                <v-icon >mdi-upload</v-icon >
                             </v-btn >
                         </v-col >
                         <v-col class="text-center" >
@@ -301,7 +368,7 @@
                                     color="error"
                                     @click="downloadInvData()" >
                                 Скачать
-                                <v-icon>mdi-download</v-icon>
+                                <v-icon >mdi-download</v-icon >
                             </v-btn >
                         </v-col >
                     </v-row >
@@ -333,8 +400,8 @@
                         <v-col cols="4" class="pl-6" >
                             <v-btn
                                     color="success"
-                                    @click=""
-                                    :disabled="endCheck" >Завершить
+                                    @click="dialog_add = !dialog_add"
+                            >Завершить
                             </v-btn >
                         </v-col >
                     </v-row >
@@ -348,12 +415,14 @@
 <script >
     import inventoryTransfer from '../transfer/inventory-transfer'
     import baseGetters from '../../mixins/base-getters'
+    import deleteButton from '../delete-button'
     import {mapState, mapMutations, mapActions} from 'vuex';
 
     export default {
         name: "inventory",
         components: {
-            inventoryTransfer
+            inventoryTransfer,
+            deleteButton
         },
         mixins: [baseGetters],
         mounted() {
@@ -385,18 +454,19 @@
                 end_text: '',
                 numberUniqFilter: null,
                 nameFilter: null,
+                showSuccessClosed: false,
             }
         },
         methods: {
-            ...mapActions('inventory', ['getINventory','uploadInventory','updateItemStatus']),
-            ...mapMutations('inventory', ['updateInventoryNameGroupStatus','setInventoryClose']),
+            ...mapActions('inventory', ['getINventory', 'uploadInventory', 'updateItemStatus']),
+            ...mapMutations('inventory', ['updateInventoryNameGroupStatus', 'setInventoryClose']),
             toogle_group(name_arr) {
                 this.updateInventoryNameGroupStatus(name_arr)
             },
-            downloadInvData(){
+            downloadInvData() {
                 this.getINventory(this.$route.params.id);
             },
-            uploadInventoryData(){
+            uploadInventoryData() {
                 this.uploadInventory(this.$route.params.id);
             },
             //перенести в общий компонент
@@ -414,7 +484,7 @@
             },
             addInventoryItem(data) {
                 this.inventory.InventoryItems.push(data.inventory_item)
-                this.equipments.push(data.equipment)
+                this.equipments.push(data.inventory_item.equipment)
             },
             groupName(equipments) {
                 let group = {}, sort_group_alp = [], sort_len = [];
@@ -468,9 +538,19 @@
             closeInventory() {
                 this.setInventoryClose(true)
                 this.HTTP().put('/inventory/' + this.$route.params.id, {
-                    inventory:this.inventory
+                    inventory: this.inventory
                 }).then(({data}) => {
+                    this.showSuccessClosed = true
 
+
+                })
+            },
+
+            openInventory() {
+                this.setInventoryClose(false)
+                this.HTTP().put('/inventory/' + this.$route.params.id, {
+                    inventory: this.inventory
+                }).then(({data}) => {
 
 
                 })
@@ -504,6 +584,8 @@
             filter_equipments() {
                 let filtred = this.inventory.InventoryItems;
 
+                filtred = filtred.filter(item => item.cause != 2)
+
                 if (this.nameFilter != null) {
                     filtred = filtred.filter((item) => {
                         return item.equipment.id == this.nameFilter
@@ -517,6 +599,12 @@
                     })
 
                 }
+
+                return filtred
+            },
+            added_equipments() {
+                let filtred = this.inventory.InventoryItems
+                    .filter(item => item.cause == 2)
 
                 return filtred
             },

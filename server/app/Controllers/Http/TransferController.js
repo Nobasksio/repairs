@@ -67,7 +67,7 @@ class TransferController {
         save new state and save history
         */
         new_state = JSON.stringify(transfer)
-        dbloger.createRecord(old_state,new_state,user.id,'transfer')
+        dbloger.createRecord(old_state,new_state,user.id,'transfer',transfer.id)
 
 
         return response.json({
