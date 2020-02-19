@@ -72,14 +72,85 @@
                     <span class="font-weight-black" >{{ new Intl.NumberFormat('ru-RU').format(summ_filtred)  }} руб</span >
                 </div >
             </v-col >
-            <v-col >
-                <v-btn color="primary" class="mt-1"
+            <v-col>
+                <v-btn small color="primary" class="mt-1"
 
-                       large @click="clear" >очистить
+                        @click="clear" >очистить
+                </v-btn >
+                <v-btn small color="primary" class="mt-1"
+
+                        @click="isGroupName = !isGroupName" >
+                    {{isGroupName ? 'разгр.' : 'групп.'}}
                 </v-btn >
             </v-col >
         </v-row >
+        <v-data-table
+                :headers="headersGroup"
+                :items="groupName"
+                class="elevation-1 pb-10"
+                item-key="name"
+                show-expand
+                disable-pagination
+                @page-count="pageCount = $event"
+                v-if='isGroupName'
+        >
+            <template v-slot:item.name="{ item }" >
+                {{ item.name }}
+            </template >
+            <template v-slot:item.department_id="{ item }" >
+                {{ (getDepartment(item.department_id)).name }}
+            </template >
+            <template v-slot:item.count="{ item }" >
+                {{ item.items.length }}
+            </template >
+            <template v-slot:expanded-item="{ item }" >
+                <td :colspan="headersGroup.length +1" class="px-0">
+                    <v-data-table
+                            :headers="headers"
+                            :items="item.items"
+                            :page.sync="page"
+                            dense
+                            class="elevation-1"
+                            v-model="selected"
+                            show-select
+                            hide-default-footer
+                            :disable-pagination="false"
+                            @page-count="pageCount = $event"
+                    >
+                        <template v-slot:item.equipment_id="{ item }" >
+                            {{ (getEquipment(item.equipment_id)).name }}
+                        </template >
+                        <template v-slot:item.department_id="{ item }" >
+                            {{ (getDepartment(item.department_id)).name }}
+                        </template >
 
+                        <template v-slot:item.type_eq_id="{ item }" >
+                            {{ (getGroup(item.type_eq_id)).name }}
+                        </template >
+                        <template v-slot:item.date_buy="{ item }" >
+                            {{ date_format(item.date_buy)}}
+                        </template >
+                        <template v-slot:item.warranty="{ item }" >
+                            {{ date_format(item.warranty)}}
+                        </template >
+                        <template v-slot:item.isWarranty="{ item }" >
+                            {{ item.isWarranty ? 'да': 'Нет'}}
+                        </template >
+                        <template v-slot:item.action="{ item }" >
+
+                            <v-icon
+                                    small
+                                    class="mr-2"
+                                    @click="editItem(item)"
+                            >
+                                edit
+                            </v-icon >
+
+                        </template >
+                    </v-data-table >
+                </td>
+            </template >
+        </v-data-table >
         <v-data-table
                 :headers="headers"
                 :items="filter_equipments"
@@ -90,6 +161,7 @@
                 v-model="selected"
                 show-select
                 @page-count="pageCount = $event"
+                v-if='!isGroupName'
         >
             <template v-slot:item.equipment_id="{ item }" >
                 {{ (getEquipment(item.equipment_id)).name }}
@@ -167,12 +239,16 @@
                 menu2: false,
                 departments: [],
                 group_eq: [],
+                isGroupName: false,
+
+                expanded: [],
                 filter: {
                     department: [],
                     name: null,
                     number_uniq: null,
                     group: []
                 },
+                selected2s: [],
                 selected: [],
                 headers: [
                     {
@@ -190,11 +266,29 @@
                     // { text: 'В ремонте', value: 'iron' },
                     {text: '', value: 'action', sortable: false},
                 ],
+                headersGroup: [
+                    {
+                        text: 'Название',
+                        align: 'left',
+                        sortable: false,
+                        value: 'name',
+                    },
+                    {
+                        text: 'подразделение',
+                        value: 'department_id'
+                    },
+                    {
+                        text: 'количество',
+                        value: 'count'
+                    },
+                    {text: '', value: 'data-table-expand'},
+
+                ],
                 equipments: [],
             }
         },
         mounted() {
-            HTTTP().get('/lists')
+            this.HTTP().get('/lists')
                 .then((response) => {
                     this.departments.splice(0, this.departments.length, ...response.data.department);
                     this.group_eq.splice(0, this.group_eq.length, ...response.data.type);
@@ -202,7 +296,7 @@
                 .catch((error) => {
                     console.log(error);
                 })
-            HTTTP().get('/equipments')
+            this.HTTP().get('/equipments')
                 .then((response) => {
                     this.equipments.splice(0, this.equipments.length, ...response.data);
                 })
@@ -261,14 +355,42 @@
                 return filtred
             },
             summ_filtred() {
-                let summ = 0
+                let summ = 0;
 
                 this.filter_equipments.forEach((item, i, arr) => {
                     summ = summ + item.price
                 })
 
                 return summ
-            }
+            },
+            groupName() {
+                let group = {}, arrayGroupName = [],equipments = this.filter_equipments;
+
+
+                for (let i = 0; i < equipments.length; i++) {
+                    let hash = `${equipments[i].name}${equipments[i].department_id}`
+                    if (group[hash] !== undefined) {
+                        group[hash].push(equipments[i])
+                    } else {
+                        group[hash] = []
+                        group[hash].push(equipments[i])
+                    }
+                }
+
+                let i = 0
+
+                for (let index in group) {
+
+                    arrayGroupName.push({name: index,
+                        items: group[index],
+                        value: i,
+                        department_id: group[index][0].department_id})
+                    i++
+                }
+
+                console.log(arrayGroupName)
+                return arrayGroupName
+            },
         },
         methods: {
             ...mapMutations('filter', [
@@ -333,3 +455,8 @@
         }
     }
 </script >
+<style scoped >
+    .w-100 {
+        min-width: 100%;
+    }
+</style >
