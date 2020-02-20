@@ -254,7 +254,6 @@
                     <v-col cols="4" >
                         <v-btn color="primary" @click="dialog_provider = true" class="mt-2" >Добавить нового</v-btn >
                     </v-col >
-
                 </v-row >
                 <v-row >
                     <v-col cols="4" >
@@ -285,15 +284,15 @@
                         </v-alert >
                     </v-col >
                 </v-row >
-                <v-row >
+                <v-row v-if="!succ_alert">
                     <v-col cols="auto" >
-                        <v-btn color="primary" class="mt-3 "
+                        <v-btn color="primary" class="mt-3"
                                :loading="loading"
                                v-if="!queue"
                                :disabled="loading || !valid"
                                large @click="create_equipment()" >{{name_button}}
                         </v-btn >
-                        <v-btn color="primary" class="mt-3 "
+                        <v-btn color="primary" class="mt-3"
                                :loading="loading"
                                v-else
                                :disabled="loading || !valid"

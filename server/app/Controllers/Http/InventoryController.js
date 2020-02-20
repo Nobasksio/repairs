@@ -151,12 +151,12 @@ class InventoryController {
 
         new_state = JSON.stringify(inventory)
 
-        dbloger.createRecord(old_state,new_state,user.id,'inventory',inventory.id)
+        this.dbloger.createRecord(old_state,new_state,user.id,'inventory',inventory.id)
 
 
         equipments_list = await Equipment.query().where('isDelete', false).where('department_id', inventory.department_id).fetch()
 
-        dbloger.createRecord({},equipments_list.toJSON(),user.id,'inventoryItems',inventory.id)
+        this.dbloger.createRecord({},equipments_list.toJSON(),user.id,'inventoryItems',inventory.id)
 
 
         equipments_list.toJSON().forEach(async (item) => {
@@ -174,7 +174,6 @@ class InventoryController {
     async update({request, response, auth}) {
         let inventory_param = request.all().inventory,
             inventory,
-            dbloger = new Dbloger(),
             old_state,
             new_state,
             user = await auth.getUser();
@@ -200,7 +199,7 @@ class InventoryController {
 
         new_state = JSON.stringify(inventory)
 
-        dbloger.createRecord(old_state, new_state, user.id, 'inventory',inventory.id)
+        this.dbloger.createRecord(old_state, new_state, user.id, 'inventory',inventory.id)
 
         return response.json({status: '200', inventory:inventory})
     }

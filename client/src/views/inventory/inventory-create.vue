@@ -67,6 +67,22 @@
                     </v-menu >
                 </v-col >
             </v-row >
+            <v-row class="mt-n6 mb-n3" >
+                <v-col cols="" >
+                    <v-alert type="success"
+                             transition="scale-transition"
+                             :value="succ_alert"
+                    >
+                        Оборудование успешно добавлено
+                    </v-alert >
+                    <v-alert type="error"
+                             transition="scale-transition"
+                             :value="error_alert"
+                    >
+                        При сохранении возникли проблемы. Попробуйте ещё раз или обратитесь в поддержку.
+                    </v-alert >
+                </v-col >
+            </v-row >
             <v-row >
                 <v-col cols="4" >
                     <v-btn color="primary" class="m-2"
@@ -98,6 +114,8 @@
         data() {
             return {
                 departments: [],
+                succ_alert: false,
+                error_alert:false,
                 date_menu: false,
                 valid: false,
                 loading:false,
