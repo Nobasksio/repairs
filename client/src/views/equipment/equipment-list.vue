@@ -381,7 +381,7 @@
 
                 for (let index in group) {
 
-                    arrayGroupName.push({name: index,
+                    arrayGroupName.push({name: group[index][0].name,
                         items: group[index],
                         value: i,
                         department_id: group[index][0].department_id})
