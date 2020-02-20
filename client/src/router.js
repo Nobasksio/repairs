@@ -33,6 +33,7 @@ export default new Router({
               {path: '/repair/edit/:id', component: () => import('./views/repairs/repair-edit'),},
 
               {path: '/transfer/create', component: () => import('./views/transfer/transfer-create.vue'),},
+              {path: '/transfer/createPacket', name:"packetTransfer",component: () => import('./views/transfer/packet-transfer.vue'),},
               {path: '/transfer/', component: () => import('./views/transfer/transfer-list.vue'),},
               {path: '/transfer/edit/:id', component: () => import('./views/transfer/transfer-edit'),},
 

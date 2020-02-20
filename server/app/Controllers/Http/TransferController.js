@@ -26,49 +26,62 @@ class TransferController {
             new_tr = true,
             user = await auth.getUser(),
             old_state,
+            equipments = [],
             dbloger = new Dbloger(),
             new_state;
 
-        if (transfer_param.id == null){
 
-            transfer = new Transfer();
-            action = 'add'
-
+        if (request.all().equipments !== undefined){
+            equipments = request.all().equipments
         } else {
-
-            new_tr = false
-            transfer = await Transfer.findBy('id', transfer_param.id)
-            action = 'update'
-
+            equipments = [transfer_param.equipment]
         }
 
-        old_state = JSON.stringify(transfer)
 
-        transfer.equipment_id = transfer_param.equipment.id
-        transfer.description = transfer_param.description
-        transfer.from_dep_id = transfer_param.from_dep_id
-        transfer.to_dep_id = transfer_param.to_dep_id
-        transfer.user_id = user.id
 
-        if (new_tr) {
-            let equipment = await Equipment.findBy('id', transfer_param.equipment.id)
-            equipment.department_id = transfer.to_dep_id
+        for(let i = 0; i < equipments.length; i++) {
 
-            await equipment.save()
+            if (transfer_param.id == null){
+
+                transfer = new Transfer();
+                action = 'add'
+
+            } else {
+
+                new_tr = false
+                transfer = await Transfer.findBy('id', transfer_param.id)
+                action = 'update'
+
+            }
+
+            old_state = JSON.stringify(transfer)
+
+            transfer.equipment_id = equipments[i].id
+            transfer.description = transfer_param.description
+            transfer.from_dep_id = transfer_param.from_dep_id
+            transfer.to_dep_id = transfer_param.to_dep_id
+            transfer.user_id = user.id
+
+            if (new_tr) {
+                let equipment = await Equipment.findBy('id', equipments[i].id)
+                equipment.department_id = transfer.to_dep_id
+
+                await equipment.save()
+            }
+
+            transfer.date_start = moment(transfer_param.date_start).format('YYYY-MM-DD HH:mm:ss');
+            transfer.date_finish = moment(transfer_param.date_finish).format('YYYY-MM-DD HH:mm:ss');
+
+
+            await transfer.save()
+
+            /*
+            save new state and save history
+            */
+            new_state = JSON.stringify(transfer)
+            dbloger.createRecord(old_state, new_state, user.id, 'transfer', transfer.id)
+
         }
-
-        transfer.date_start = moment(transfer_param.date_start).format('YYYY-MM-DD HH:mm:ss');
-        transfer.date_finish = moment(transfer_param.date_finish).format('YYYY-MM-DD HH:mm:ss');
-
-
-        await transfer.save()
-
-        /*
-        save new state and save history
-        */
-        new_state = JSON.stringify(transfer)
-        dbloger.createRecord(old_state,new_state,user.id,'transfer',transfer.id)
-
 
         return response.json({
             status: 'ok',

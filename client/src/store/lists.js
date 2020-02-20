@@ -9,6 +9,7 @@ export default {
         lastAddedProvider:null,
         departments:[],
         type_eq:[],
+        choosedEquimpment:[]
     },
     actions:{
         fill_lists({commit}){
@@ -44,6 +45,9 @@ export default {
         },
         resetLastAddedProvider(state){
             state.lastAddedProvider = null
+        },
+        setChoosedEquipment(state, Equipments){
+            state.choosedEquimpment = Equipments;
         }
     }
 }

@@ -194,34 +194,17 @@
 
             </template >
         </v-data-table >
-        <v-footer v-show="selected.length > 0 "
-                  :fixed="true"
-                  :padless="true" >
-            <v-card
-                    flat
-                    tile
-                    width="100%"
-                    class="blue lighten-2 text-right pb-2"
-            >
-                <v-card-text ><span class="white--text" >
-                    Вы выбрали <b >{{ selected.length }} единиц</b > оборудования</span >
-                    <v-btn
-                            @click="go_to_print()"
-                            class="mx-4"
-
-                    >
-                        Напечатать штрихкоды
-                    </v-btn >
-                </v-card-text >
-
-            </v-card >
-
-        </v-footer >
+        <action-eq-row
+                :selected="selected"
+        >
+        </action-eq-row>
     </div >
 </template >
 
 <script >
     import {mapState, mapMutations, mapActions} from 'vuex';
+
+    import  actionEqRow from '../../components/action-equipment-row';
 
     const axios = require('axios');
     import HTTTP from '../../http';
@@ -229,6 +212,9 @@
     export default {
         metaInfo: {
             title: 'Список оборудования',
+        },
+        components:{
+            actionEqRow
         },
         data() {
             return {
@@ -303,9 +289,11 @@
                 .catch(function (error) {
                     console.log(error);
                 })
+
         },
         computed: {
             ...mapState('filter', ['departmentFilter', 'groupFilter', 'nameFilter', 'numberUniqFilter']),
+            ...mapState('lists', ['choosedEquimpment']),
             filter_equipments() {
                 let filtred;
 
@@ -396,6 +384,9 @@
             ...mapMutations('filter', [
                 'setDepartmentFilter', 'setGroupFilter', 'setNameFilter', 'setNumberUniqFilter'
             ]),
+            ...mapMutations('lists', [
+                'setChoosedEquipment'
+            ]),
             ...mapActions('filter', ['clear']),
             getEquipment(equipment_id) {
                 let our_equipment = this.equipment.filter((item) => {
@@ -442,15 +433,17 @@
                 }
                 return new_date
             },
-            go_to_print() {
-                this.$router.push({name: 'barcode', params: {equipments: this.selected}})
-            },
             clean() {
                 this.filter.department = []
                 this.filter.group = []
                 this.filter.number_uniq = null
                 this.filter.name = null
 
+            }
+        },
+        watch:{
+            selected: function (newValue,OldValue) {
+                this.setChoosedEquipment(newValue)
             }
         }
     }
