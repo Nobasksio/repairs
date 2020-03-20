@@ -72,16 +72,23 @@
                     <span class="font-weight-black" >{{ new Intl.NumberFormat('ru-RU').format(summ_filtred)  }} руб</span >
                 </div >
             </v-col >
-            <v-col>
+            <v-col >
                 <v-btn small color="primary" class="mt-1"
 
-                        @click="clear" >очистить
+                       @click="clear" >очистить
                 </v-btn >
                 <v-btn small color="primary" class="mt-1"
 
-                        @click="isGroupName = !isGroupName" >
+                       @click="isGroupName = !isGroupName" >
                     {{isGroupName ? 'разгр.' : 'групп.'}}
                 </v-btn >
+            </v-col >
+            <v-col >
+                <v-btn small color="primary" class="mt-1"
+
+                       @click="downXls()" >Скачать
+                </v-btn >
+
             </v-col >
         </v-row >
         <v-data-table
@@ -104,7 +111,7 @@
                 {{ item.items.length }}
             </template >
             <template v-slot:expanded-item="{ item }" >
-                <td :colspan="headersGroup.length +1" class="px-0">
+                <td :colspan="headersGroup.length +1" class="px-0" >
                     <v-data-table
                             :headers="headers"
                             :items="item.items"
@@ -148,7 +155,7 @@
 
                         </template >
                     </v-data-table >
-                </td>
+                </td >
             </template >
         </v-data-table >
         <v-data-table
@@ -174,10 +181,10 @@
                 {{ (getGroup(item.type_eq_id)).name }}
             </template >
             <template v-slot:item.date_buy="{ item }" >
-                {{ date_format(item.date_buy)}}
+                {{ date_format(item.date_buy) }}
             </template >
             <template v-slot:item.warranty="{ item }" >
-                {{ date_format(item.warranty)}}
+                {{ date_format(item.warranty) }}
             </template >
             <template v-slot:item.isWarranty="{ item }" >
                 {{ item.isWarranty ? 'да': 'Нет'}}
@@ -197,14 +204,16 @@
         <action-eq-row
                 :selected="selected"
         >
-        </action-eq-row>
+        </action-eq-row >
     </div >
 </template >
 
 <script >
     import {mapState, mapMutations, mapActions} from 'vuex';
+    import {json2excel, excel2json} from 'js2excel';
 
-    import  actionEqRow from '../../components/action-equipment-row';
+
+    import actionEqRow from '../../components/action-equipment-row';
 
     const axios = require('axios');
     import HTTTP from '../../http';
@@ -213,7 +222,7 @@
         metaInfo: {
             title: 'Список оборудования',
         },
-        components:{
+        components: {
             actionEqRow
         },
         data() {
@@ -271,6 +280,23 @@
 
                 ],
                 equipments: [],
+                stockData: [
+                    {
+                        Symbol: "Арутр",
+                        Company: "Молодец",
+                        Price: 132.54
+                    },
+                    {
+                        Symbol: "INTC",
+                        Company: "Intel Corporation",
+                        Price: 33.45
+                    },
+                    {
+                        Symbol: "GOOG",
+                        Company: "Google Inc",
+                        Price: 554.52
+                    },
+                ]
             }
         },
         mounted() {
@@ -352,7 +378,7 @@
                 return summ
             },
             groupName() {
-                let group = {}, arrayGroupName = [],equipments = this.filter_equipments;
+                let group = {}, arrayGroupName = [], equipments = this.filter_equipments;
 
 
                 for (let i = 0; i < equipments.length; i++) {
@@ -369,10 +395,12 @@
 
                 for (let index in group) {
 
-                    arrayGroupName.push({name: group[index][0].name,
+                    arrayGroupName.push({
+                        name: group[index][0].name,
                         items: group[index],
                         value: i,
-                        department_id: group[index][0].department_id})
+                        department_id: group[index][0].department_id
+                    })
                     i++
                 }
 
@@ -439,10 +467,35 @@
                 this.filter.number_uniq = null
                 this.filter.name = null
 
-            }
+            },
+            downXls() {
+                // this will be export a excel and the file's name is user-info-data.xlsx
+// the default file's name is excel.xlsx
+                try {
+                    json2excel({
+                        data: this.filter_equipments,
+                        name: 'user-info-data',
+                        formateDate: 'yyyy/mm/dd'
+                    });
+                } catch (e) {
+                    console.error('export error');
+                }
+
+// for webpack 3: dynamic import
+                import(/* webpackChunkName: "js2excel" */ 'js2excel').then(({json2excel}) => {
+                    json2excel({
+                        data,
+                        name: 'test',
+                        formateDate: 'dd/mm/yyyy'
+                    });
+                }).catch((e) => {
+
+                });
+
+            },
         },
-        watch:{
-            selected: function (newValue,OldValue) {
+        watch: {
+            selected: function (newValue, OldValue) {
                 this.setChoosedEquipment(newValue)
             }
         }

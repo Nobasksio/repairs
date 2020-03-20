@@ -76,7 +76,9 @@
                             <v-list-item
                                     :key="`groupName${item.id}`"
                                     v-for="item in name_arr.groups"
+                                    :class="{'grey lighten-3' : item.status }"
                             >
+
                                 <template >
                                     <v-list-item-content >
                                         <v-list-item-title
@@ -98,7 +100,9 @@
                         <template v-else >
                             <v-list-item
                                     :key="`groupName${item.id}`"
-                                    v-for="item in name_arr.groups" >
+                                    v-for="item in name_arr.groups"
+                                    :class="{'grey lighten-3' : item.status }"
+                            >
                                 <template >
                                     <v-list-item-content >
                                         <v-list-item-title
