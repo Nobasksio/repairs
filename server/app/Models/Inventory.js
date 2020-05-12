@@ -13,6 +13,9 @@ class Inventory extends Model {
         return this
             .hasMany('App/Models/InventoryItems')
     }
+    department() {
+        return this.belongsTo('App/Models/Department', 'department_id', 'id')
+    }
 }
 
 module.exports = Inventory

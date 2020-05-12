@@ -143,6 +143,9 @@
                         <template v-slot:item.isWarranty="{ item }" >
                             {{ item.isWarranty ? 'да': 'Нет'}}
                         </template >
+                        <template v-slot:item.is_out_of_order="{ item }" >
+                            {{ item.is_out_of_order === 1 ? 'да': 'Нет'}}
+                        </template >
                         <template v-slot:item.action="{ item }" >
 
                             <v-icon
@@ -188,6 +191,15 @@
             </template >
             <template v-slot:item.isWarranty="{ item }" >
                 {{ item.isWarranty ? 'да': 'Нет'}}
+            </template >
+            <template v-slot:item.is_out_of_order="{ item }" >
+                <v-chip
+                        class="ma-2"
+                        :color="item.is_out_of_order === 0 ? `green` : `red` "
+                        text-color="white"
+                >
+                    {{item.is_out_of_order === 1 ? "да" : "нет" }}
+                </v-chip>
             </template >
             <template v-slot:item.action="{ item }" >
 
@@ -256,6 +268,7 @@
                     {text: 'Группа', value: 'type_eq_id'},
                     {text: 'Номер', value: 'out_number'},
                     {text: 'Гарантия', value: 'isWarranty'},
+                    {text: 'Списано', value: 'is_out_of_order'},
                     {text: 'Цена', value: 'price'},
                     {text: 'Дата Покупки', value: 'date_buy'},
                     // { text: 'В ремонте', value: 'iron' },
@@ -280,23 +293,6 @@
 
                 ],
                 equipments: [],
-                stockData: [
-                    {
-                        Symbol: "Арутр",
-                        Company: "Молодец",
-                        Price: 132.54
-                    },
-                    {
-                        Symbol: "INTC",
-                        Company: "Intel Corporation",
-                        Price: 33.45
-                    },
-                    {
-                        Symbol: "GOOG",
-                        Company: "Google Inc",
-                        Price: 554.52
-                    },
-                ]
             }
         },
         mounted() {

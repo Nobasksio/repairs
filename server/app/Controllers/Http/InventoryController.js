@@ -21,7 +21,11 @@ class InventoryController {
         // Logger.transport('file').info('request is '+ new Date().toISOString()+' url: '+request.url()+' params:'+params.id , request.url())
 
 
-        let inventory = await Inventory.findBy('id', params.id)
+        let inventory = await Inventory
+            .query()
+            .with('department')
+            .where('id', params.id)
+            .first();
 
         await inventory.loadMany({
             InventoryItems: (builder) => {
@@ -158,15 +162,19 @@ class InventoryController {
 
         this.dbloger.createRecord({},equipments_list.toJSON(),user.id,'inventoryItems',inventory.id)
 
+        const arrayEquipment = equipments_list.toJSON();
 
-        equipments_list.toJSON().forEach(async (item) => {
+        for(let i = 0; i < arrayEquipment.length; i++){
             let inventory_item = new InventoryItems();
             inventory_item.inventory_id = inventory.id
-            inventory_item.equipment_id = item.id
+            inventory_item.equipment_id = arrayEquipment[i].id
             inventory_item.cause = 1
 
             await inventory_item.save()
-        })
+        }
+        // equipments_list.toJSON().forEach(async (item) => {
+        //
+        // })
 
         return response.json({name: 'myau', inventory: inventory})
     }

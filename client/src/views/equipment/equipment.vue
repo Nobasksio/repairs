@@ -1,6 +1,12 @@
 <template >
     <div >
         <h1 class="display-1" >Редактирование оборудования</h1 >
+        <v-alert type="error"
+                 class="my-5"
+                 transition="scale-transition"
+                 v-if="equipment.is_out_of_order == 1">
+            Это оборудование списано
+        </v-alert>
         <v-tabs
                 v-model="tab"
         >
@@ -31,12 +37,12 @@
                                 <td class="font-weight-bold" >Внутренний номер</td >
                                 <td >
                                     <barcode :value="equipment.in_number_uniq"
-                                             :options="{ displayValue: true, width:3, height:70 }"></barcode>
+                                             :options="{ displayValue: true, width:3, height:70 }" ></barcode >
                                 </td >
                             </tr >
                             <tr >
                                 <td class="font-weight-bold" >Гарантия действует</td >
-                                <td >{{ equipment.noWarranty ? 'Нет': 'Да'  }}</td >
+                                <td >{{ equipment.noWarranty ? 'Нет': 'Да' }}</td >
                             </tr >
                             <tr >
                                 <td class="font-weight-bold" >Подразделение</td >
@@ -97,19 +103,27 @@
                                    @click="editItem(equipment.id)"
                                    large >{{name_button}}
                             </v-btn >
-                            <deleteButton
-                                    entity_name_ru="оборудование"
-                                    entity_name_eng="equipment"
-                                    :want_delete_id="equipment.id"
-                            ></deleteButton>
+                            <v-btn color="error"
+                                   large
+                                   class="m-2 mx-5 float-right"
+                                   @click="wantToOutOfOrder(equipment.id)"
+                                   v-if="equipment.is_out_of_order == 0"
+                            >
+                                Списать
+                            </v-btn >
+                            <!--<deleteButton-->
+                            <!--entity_name_ru="оборудование"-->
+                            <!--entity_name_eng="equipment"-->
+                            <!--:want_delete_id="equipment.id"-->
+                            <!--&gt;</deleteButton>-->
                         </v-col >
                     </v-row >
                 </v-card >
             </v-tab-item >
             <v-tab-item value="tab-2" >
-                <div class="display-1 py-5 px-3">
+                <div class="display-1 py-5 px-3" >
                     сумма ремонта {{ all_summ_rapairs }} руб
-                </div>
+                </div >
                 <v-data-table
                         :headers="headers"
                         :items="equipment.repairs"
@@ -125,13 +139,13 @@
                     <template v-slot:item.isWarranty="{ item }" >
                         {{ item.isWarranty ? 'Да': 'Нет'}}
                     </template >
-                    <template v-slot:item.action="{ item }">
+                    <template v-slot:item.action="{ item }" >
                         <!--<v-icon-->
-                                <!--small-->
-                                <!--class="mx-5"-->
-                                <!--@click="editRepairs(item.id)"-->
+                        <!--small-->
+                        <!--class="mx-5"-->
+                        <!--@click="editRepairs(item.id)"-->
                         <!--&gt;-->
-                            <!--more_horiz-->
+                        <!--more_horiz-->
                         <!--</v-icon>-->
                         <v-icon
                                 small
@@ -139,8 +153,8 @@
                                 @click="editRepairs(item.id)"
                         >
                             edit
-                        </v-icon>
-                    </template>
+                        </v-icon >
+                    </template >
 
                 </v-data-table >
 
@@ -152,30 +166,30 @@
                         :items-per-page="5"
                         class="elevation-1"
                 >
-                    <template v-slot:item.name="{ item }">
+                    <template v-slot:item.name="{ item }" >
                         {{ equipment.name }}
-                    </template>
-                    <template v-slot:item.department_from="{ item }">
+                    </template >
+                    <template v-slot:item.department_from="{ item }" >
                         {{ (getDepartment(item.from_dep_id)).name }}
-                    </template>
-                    <template v-slot:item.department_to="{ item }">
+                    </template >
+                    <template v-slot:item.department_to="{ item }" >
                         {{ (getDepartment(item.to_dep_id)).name }}
-                    </template>
+                    </template >
 
-                    <template v-slot:item.date_start="{ item }">
+                    <template v-slot:item.date_start="{ item }" >
                         {{ item.date_start.slice(0,10) }}
-                    </template>
+                    </template >
 
-                    <template v-slot:item.warranty="{ item }">
+                    <template v-slot:item.warranty="{ item }" >
                         {{ item.isWarranty ? 'да': 'Нет'}}
-                    </template>r
-                    <template v-slot:item.action="{ item }">
+                    </template >
+                    <template v-slot:item.action="{ item }" >
                         <!--<v-icon-->
-                                <!--small-->
-                                <!--class="mx-5"-->
-                                <!--@click="editTransfer(item.id)"-->
+                        <!--small-->
+                        <!--class="mx-5"-->
+                        <!--@click="editTransfer(item.id)"-->
                         <!--&gt;-->
-                            <!--more_horiz-->
+                        <!--more_horiz-->
                         <!--</v-icon>-->
                         <v-icon
                                 small
@@ -183,26 +197,75 @@
                                 @click="editTransfer(item.id)"
                         >
                             edit
-                        </v-icon>
-                    </template>
+                        </v-icon >
+                    </template >
 
                 </v-data-table >
             </v-tab-item >
         </v-tabs-items >
-        <v-dialog v-model="photo_dialog" max-width="50%">
-            <v-card>
+        <v-dialog v-model="photo_dialog" max-width="50%" >
+            <v-card >
                 <v-img
                         class="pointer"
                         :src="'http://127.0.0.1:3334/uploads/'+show_photo.link" />
                 <v-card-actions >
-                    <div class="flex-grow-1"></div>
-                    <v-btn icon align="center" @click="delete_photo(show_photo)">
+                    <div class="flex-grow-1" ></div >
+                    <v-btn icon align="center" @click="delete_photo(show_photo)" >
                         <v-icon >mdi-trash-can-outline</v-icon >
                     </v-btn >
-                    <div class="flex-grow-1"></div>
+                    <div class="flex-grow-1" ></div >
                 </v-card-actions >
-            </v-card>
-        </v-dialog>
+            </v-card >
+        </v-dialog >
+        <v-dialog
+                v-model="dialogOutOfOrder"
+                max-width="30%"
+        >
+            <v-card >
+                <v-card-title class="headline" >Вы уверены что хотите списать это оборудование?</v-card-title >
+                <v-card-text class="pa-5" >
+                    <v-form v-model="validOutOfOrder" >
+
+                        <v-text-field
+                                v-model="outOfOrderComment"
+                                :rules="outOfOrderRules"
+                                label="Комментарий"
+                                required
+                        ></v-text-field >
+                    </v-form >
+                </v-card-text >
+                <v-alert type="success"
+                         transition="scale-transition"
+                         :value="succAlertOutOfOrder"
+                >
+                    Оборудование успешно списано
+                </v-alert >
+                <v-alert type="error"
+                         transition="scale-transition"
+                         :value="errorAlertOutOfOrder"
+                >
+                    При сохранении возникли проблемы. Попробуйте ещё раз или обратитесь в поддержку.
+                </v-alert >
+                <v-card-actions class="pa-5" >
+
+                    <v-btn
+                            color="darken-1"
+                            @click="dialogOutOfOrder = false"
+                    >
+                        Отмена
+                    </v-btn >
+                    <div class="flex-grow-1" ></div >
+                    <v-btn
+                            color="error darken-1 white--text"
+                            @click="makeOutOfOrder"
+                            :disabled="!validOutOfOrder"
+                    >
+                        Списать
+                    </v-btn >
+
+                </v-card-actions >
+            </v-card >
+        </v-dialog >
     </div >
 </template >
 
@@ -213,31 +276,40 @@
     import VueBarcode from '@xkeshi/vue-barcode';
 
 
-
     export default {
         name: "create",
-        components:{
+        components: {
             deleteButton,
-            'barcode':VueBarcode
+            'barcode': VueBarcode
         },
         data: () => {
             return {
                 tab: null,
                 id_page: null,
-                photo_dialog:false,
-                show_photo:{},
+                photo_dialog: false,
+                show_photo: {},
                 modal: false,
                 menu: false,
                 name_button: 'Изменить',
+                dialogOutOfOrder: false,
+                outOfOrderquipmentId: null,
+                outOfOrderComment: '',
+                validOutOfOrder: false,
+                errorAlertOutOfOrder: false,
+                outOfOrderRules: [
+                    v => !!v || 'Комментарий Обязателен',
+                    v => v.length >= 5 || 'Не  может быть короче 5 символов',
+                ],
+                succAlertOutOfOrder: false,
 
-                want_delete_id:null,
+                want_delete_id: null,
                 loading: false,
                 succ_alert: false,
                 error_alert: false,
                 departments: [],
                 class_eq: [],
                 type_eq: [],
-                transfers:[],
+                transfers: [],
                 equipment: {
                     name: '',
                     description: null,
@@ -246,8 +318,8 @@
                     out_number: null,
                     in_number: null,
                     in_number_uniq: null,
-                    department:{},
-                    repairs:[],
+                    department: {},
+                    repairs: [],
                     date_buy: new Date().toISOString().substr(0, 10),
                     warranty: null,
                     noWarranty: false,
@@ -310,11 +382,11 @@
                         sortable: false,
                         value: 'name',
                     },
-                    { text: 'Откуда', value: 'department_from' },
-                    { text: 'Куда', value: 'department_to' },
-                    { text: 'Когда', value: 'date_start' },
-                    { text: 'Комментарий', value: 'description' },
-                    { text: 'действия', value: 'action' },
+                    {text: 'Откуда', value: 'department_from'},
+                    {text: 'Куда', value: 'department_to'},
+                    {text: 'Когда', value: 'date_start'},
+                    {text: 'Комментарий', value: 'description'},
+                    {text: 'действия', value: 'action'},
 
                 ],
                 rules: {
@@ -343,7 +415,7 @@
 
                     this.transfers = response.data.transfers
 
-                    this.equipment.date_buy = this.equipment.date_buy.substr(0,10)
+                    this.equipment.date_buy = this.equipment.date_buy.substr(0, 10)
 
                     if (this.equipment.warranty != null) {
                         this.equipment.warranty = this.equipment.warranty.substr(0, 10)
@@ -354,10 +426,9 @@
                     console.log(error);
                 })
 
-            var { createCanvas } = require("canvas");
+            var {createCanvas} = require("canvas");
             var canvas = createCanvas();
             JsBarcode(canvas, "Hello");
-
 
 
         },
@@ -367,7 +438,7 @@
                 let max = 9999999999;
                 this.equipment.in_number_uniq = Math.floor(Math.random() * (max - min) + min);
             },
-            show_big_photo(photo){
+            show_big_photo(photo) {
                 this.show_photo = photo
                 this.photo_dialog = true
             },
@@ -397,28 +468,28 @@
                 console.log(id)
                 this.$router.push('/transfer/edit/' + id)
             },
-            date_format(date){
+            date_format(date) {
                 let new_date = ''
-                if (date != null){
-                    new_date = date.substr(0,10)
+                if (date != null) {
+                    new_date = date.substr(0, 10)
                 } else {
                     new_date = ''
                 }
                 return new_date
             },
-            delete_photo(photo){
-                HTTTP().delete('/photo/'+photo.id,
+            delete_photo(photo) {
+                HTTTP().delete('/photo/' + photo.id,
                 ).then((response) => {
 
 
-                    this.equipment.photo.forEach((item, i, arr)=>{
-                        if (item.id == photo.id){
-                            this.equipment.photo.splice(i,1)
+                    this.equipment.photo.forEach((item, i, arr) => {
+                        if (item.id == photo.id) {
+                            this.equipment.photo.splice(i, 1)
                         }
                     })
                     this.photo = {
-                        id:0,
-                        link:''
+                        id: 0,
+                        link: ''
                     }
                     this.photo_dialog = false
                 })
@@ -442,6 +513,26 @@
                 })
                 return our_department[0]
             },
+            wantToOutOfOrder(equipment_id) {
+                this.outOfOrderquipmentId = equipment_id;
+                this.dialogOutOfOrder = true;
+            },
+            makeOutOfOrder() {
+                HTTTP().post(`/equipment/out-of-order`, {
+                    equipment_id: this.outOfOrderquipmentId,
+                    state: true,
+                    comment: this.outOfOrderComment
+                })
+                    .then((response) => {
+                        this.loading = false
+                        this.succAlertOutOfOrder = true
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        this.loading = false
+                        this.errorAlertOutOfOrder = true
+                    });
+            }
         },
         watch: {
             equipment: {
@@ -464,7 +555,7 @@
                 })
                 return photo_arr
             },
-            all_summ_rapairs(){
+            all_summ_rapairs() {
                 let all_summ = 0
                 if (this.equipment.repairs) {
                     this.equipment.repairs.forEach((item, i, arr) => {

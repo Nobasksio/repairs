@@ -127,6 +127,32 @@ class EquipmentController {
         return response.json({name: 'myau', id: equipment.id})
     }
 
+    async setOutOfOrder({request, response, auth}) {
+        let old_state,
+            dbloger = new Dbloger(),
+            new_state,
+            user = await auth.getUser();
+
+        const equipment_id = request.all().equipment_id;
+        const state = request.all().state;
+        const comment = request.all().comment;
+        const equipment = await Equipment.findBy('id', equipment_id);
+
+        old_state = JSON.stringify(equipment)
+        equipment.is_out_of_order = state;
+        equipment.out_of_order_comment = comment;
+
+
+        await equipment.save();
+
+        new_state = JSON.stringify(equipment)
+        dbloger.createRecord(old_state,new_state,user.id,'equipment',equipment.id)
+
+
+        return response.json({message: 'Оборудование успешно списано', id: equipment.id})
+
+    }
+
     async upload({params,request, response}) {
 
         Logger.transport('file').info('request url is %s', request.url())

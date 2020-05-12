@@ -21,7 +21,7 @@ class UserController {
         let name = register_param.user.name
 
 
-        const user = await  User.create({
+        const user = await User.create({
             email,
             password,
             username:email

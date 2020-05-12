@@ -28,6 +28,9 @@ Route.post('/api/login','UserController.login')
 Route.get('/api/equipments', 'EquipmentController.list')
 Route.post('/api/equipment', 'EquipmentController.create').middleware('auth');
 Route.post('api/equipment/checknumber', 'EquipmentController.checkNumber')
+Route.post('api/equipment/out-of-order', 'EquipmentController.setOutOfOrder')
+
+
 Route.get('/api/equipment/:id', 'EquipmentController.equipment')
 Route.delete('/api/equipment/:id', 'EquipmentController.delete')
 
@@ -71,3 +74,6 @@ Route.delete('/api/inventory/:id','InventoryController.delete')
 
 Route.put('/api/inventoryItem/:id','InventoryController.updateInventoryItem')
 Route.post('/api/addInventoryItem','InventoryController.addInventoryItem')
+
+Route.post('/api/antrekot','AntrekotController.create')
+Route.post('/api/tochka','TochkaController.create')

@@ -8,7 +8,7 @@
             <v-container class="fill-height" fluid >
                 <v-container >
                     <h1 class="display-1" >Инвентаризация </h1 >
-                    <div class="subtitle-1" >Антрекот КМ (21.10.2020)</div >
+                    <div class="subtitle-1" >{{inventory.department.name}} ({{ inventory.date_plan.substr(0,10) }})</div >
                     <v-alert prominent type="warning" v-if="inventory.isClose" >
                         <v-row align="center" >
                             <v-col cols="auto" >
