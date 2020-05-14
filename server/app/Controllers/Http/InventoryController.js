@@ -33,7 +33,9 @@ class InventoryController {
             }
         })
 
-        let inventoryEquipment = await inventory.Equipments().wherePivot('isDelete', false).fetch()
+        let inventoryEquipment = await inventory.Equipments().wherePivot('isDelete', false)
+            .where('is_out_of_order', false)
+            .fetch()
 
 
         inventory = inventory.toJSON();
@@ -165,6 +167,8 @@ class InventoryController {
         const arrayEquipment = equipments_list.toJSON();
 
         for(let i = 0; i < arrayEquipment.length; i++){
+
+            if (arrayEquipment[i].is_out_of_order === 1) continue;
             let inventory_item = new InventoryItems();
             inventory_item.inventory_id = inventory.id
             inventory_item.equipment_id = arrayEquipment[i].id

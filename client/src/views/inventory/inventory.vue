@@ -8,7 +8,8 @@
             <v-container class="fill-height" fluid >
                 <v-container >
                     <h1 class="display-1" >Инвентаризация </h1 >
-                    <div class="subtitle-1" >{{inventory.department.name}} ({{ inventory.date_plan.substr(0,10) }})</div >
+                    <div class="subtitle-1" >{{inventory.department.name}} ({{ inventory.date_plan.substr(0,10) }})
+                    </div >
                     <v-alert prominent type="warning" v-if="inventory.isClose" >
                         <v-row align="center" >
                             <v-col cols="auto" >
@@ -163,7 +164,7 @@
                             entity_name_eng="inventory"
                             go_to="inventory"
                             :want_delete_id="inventory.id"
-                    ></deleteButton>
+                    ></deleteButton >
                 </div >
 
                 <v-footer
@@ -564,6 +565,7 @@
             ...mapState('inventory', ['inventory', 'isSync', 'dateSync', 'equipments']),
             groupSet() {
                 let groups = {}
+
                 this.filter_equipments.forEach((item) => {
                     let {name} = this.getGroup(item.equipment.type_eq_id)
                     if (groups[name] !== undefined) {
@@ -590,14 +592,14 @@
 
                 filtred = filtred.filter(item => item.cause != 2)
 
-                if (this.nameFilter != null) {
+                if (this.nameFilter !== null) {
                     filtred = filtred.filter((item) => {
                         return item.equipment.id == this.nameFilter
                     })
 
                 }
 
-                if (this.numberUniqFilter != null) {
+                if (this.numberUniqFilter !== null) {
                     filtred = filtred.filter((item) => {
                         return item.equipment.id == this.numberUniqFilter
                     })

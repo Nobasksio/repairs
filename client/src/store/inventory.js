@@ -60,9 +60,10 @@ export default {
             state.inventory = payload
         },
         updateInventoryNameGroupStatus(state,name_arr){
+            console.log(name_arr);
             if (!state.inventory.isClose) {
                 name_arr.groups.forEach((item) => {
-                    item.inventory_row.status = name_arr.status
+                    item.status = name_arr.status
                 })
             }
         },

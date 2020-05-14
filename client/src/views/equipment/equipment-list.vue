@@ -266,7 +266,7 @@
                     },
                     {text: 'Подразделение', value: 'department_id'},
                     {text: 'Группа', value: 'type_eq_id'},
-                    {text: 'Номер', value: 'out_number'},
+                    {text: 'Штрихкод', value: 'in_number_uniq'},
                     {text: 'Гарантия', value: 'isWarranty'},
                     {text: 'Списано', value: 'is_out_of_order'},
                     {text: 'Цена', value: 'price'},

@@ -41,7 +41,10 @@ class EquipmentController {
     async list({request, response}) {
 
 
-        let equipments_list = await Equipment.query().where('isDelete', false).fetch()
+        let equipments_list = await Equipment.query().where({
+            isDelete: false,
+            is_out_of_order: false
+        }).fetch()
 
         return equipments_list
     }

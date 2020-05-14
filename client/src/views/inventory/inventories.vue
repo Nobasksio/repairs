@@ -34,13 +34,13 @@
             >
                 more_horiz
             </v-icon >
-            <v-icon
-                    small
-                    class="mr-5"
-                    @click="editItem('inventory',item)"
-            >
-                edit
-            </v-icon >
+            <!--<v-icon-->
+                    <!--small-->
+                    <!--class="mr-5"-->
+                    <!--@click="editItem('inventory',item)"-->
+            <!--&gt;-->
+                <!--edit-->
+            <!--</v-icon >-->
         </template >
     </v-data-table >
 </template >
