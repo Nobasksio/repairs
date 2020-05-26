@@ -53,19 +53,34 @@ export default {
             }).catch(function (error) {
                 commit('addError', error);
             })
-        }
+        },
+        async updateInventoryNameGroupStatus({commit, state}, name_arr){
+            console.log(name_arr);
+            if (!state.inventory.isClose) {
+
+                for(let i = 0; i < name_arr.groups.length; i += 1){
+                    name_arr.groups[i].status = name_arr.status;
+                    commit('setIsSync', false);
+
+                    await HTTTP().put('/inventoryItem/' + name_arr.groups[i].id,{
+                        intentoryItem:name_arr.groups[i]
+                    }).then(({data}) => {
+
+                        commit('updateDateSync');
+                        commit('setIsSync', true);
+
+
+                    }).catch(function (error) {
+                        commit('addError', error);
+                    })
+
+                }
+            }
+        },
     },
     mutations: {
         setInventory(state, payload) {
             state.inventory = payload
-        },
-        updateInventoryNameGroupStatus(state,name_arr){
-            console.log(name_arr);
-            if (!state.inventory.isClose) {
-                name_arr.groups.forEach((item) => {
-                    item.status = name_arr.status
-                })
-            }
         },
         setEquipments(state, payload) {
             state.equipments.splice(0, state.equipments.length, ...payload)

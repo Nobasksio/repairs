@@ -463,8 +463,8 @@
             }
         },
         methods: {
-            ...mapActions('inventory', ['getINventory', 'uploadInventory', 'updateItemStatus']),
-            ...mapMutations('inventory', ['updateInventoryNameGroupStatus', 'setInventoryClose']),
+            ...mapActions('inventory', ['getINventory', 'uploadInventory', 'updateItemStatus', 'updateInventoryNameGroupStatus']),
+            ...mapMutations('inventory', ['setInventoryClose']),
             toogle_group(name_arr) {
                 this.updateInventoryNameGroupStatus(name_arr)
             },
