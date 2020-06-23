@@ -467,9 +467,17 @@
             downXls() {
                 // this will be export a excel and the file's name is user-info-data.xlsx
 // the default file's name is excel.xlsx
+
+                const exportList = this.filter_equipments.map((item) => {
+
+                    const row = {...item};
+                    row['подразделение'] = this.getDepartment(item.department_id).name;
+                    return row
+                });
+                console.log(exportList);
                 try {
                     json2excel({
-                        data: this.filter_equipments,
+                        data: exportList,
                         name: 'user-info-data',
                         formateDate: 'yyyy/mm/dd'
                     });

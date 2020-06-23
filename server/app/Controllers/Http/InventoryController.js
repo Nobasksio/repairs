@@ -34,7 +34,7 @@ class InventoryController {
         })
 
         let inventoryEquipment = await inventory.Equipments().wherePivot('isDelete', false)
-            .where('is_out_of_order', false)
+            // .where('is_out_of_order', false)
             .fetch()
 
 
