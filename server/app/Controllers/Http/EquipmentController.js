@@ -20,8 +20,12 @@ class EquipmentController {
 
         let equipment = await Equipment.findBy('id', params.id)
 
-        const equipmentDepartment = await equipment.Department().where('isDelete', false).fetch()
-        const typeEq = await equipment.TypeEq().where('isDelete', false).fetch()
+        const equipmentDepartment = await equipment
+            .Department()
+            .where('isDelete', false)
+            .fetch()
+        const typeEq = await equipment.TypeEq().where('isDelete', false)
+            .orderBy('name', 'desc').fetch()
         const repairs = await equipment.Repairs().where('isDelete', false).fetch()
         const photos = await equipment.Photos().where('isDelete', false).fetch()
         const transfers = await equipment.Transfers().where('isDelete', false).fetch()

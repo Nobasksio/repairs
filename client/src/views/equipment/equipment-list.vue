@@ -163,6 +163,7 @@
         </v-data-table >
         <v-data-table
                 :headers="headers"
+                :must-sort="true"
                 :items="filter_equipments"
                 :page.sync="page"
                 :items-per-page="itemsPerPage"
@@ -170,6 +171,7 @@
                 class="elevation-1 pb-10"
                 v-model="selected"
                 show-select
+                sort-by="name"
                 @page-count="pageCount = $event"
                 v-if='!isGroupName'
         >
@@ -261,7 +263,6 @@
                     {
                         text: 'Название',
                         align: 'left',
-                        sortable: false,
                         value: 'name',
                     },
                     {text: 'Подразделение', value: 'department_id'},
@@ -400,7 +401,7 @@
                     i++
                 }
 
-                console.log(arrayGroupName)
+
                 return arrayGroupName
             },
         },
@@ -474,7 +475,7 @@
                     row['подразделение'] = this.getDepartment(item.department_id).name;
                     return row
                 });
-                console.log(exportList);
+
                 try {
                     json2excel({
                         data: exportList,

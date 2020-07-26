@@ -493,6 +493,8 @@
             },
             groupName(equipments) {
                 let group = {}, sort_group_alp = [], sort_len = [];
+
+
                 equipments.forEach((item) => {
                     if (group[item.equipment.name] !== undefined) {
                         group[item.equipment.name]['groups'].push(item)
@@ -506,14 +508,37 @@
                     }
                 })
 
+
                 for (let index in group) {
-                    if (group[index].groups.length == 1) {
-                        sort_len.unshift(group[index])
-                    } else {
-                        sort_len.push(group[index])
-                    }
+
+                    sort_len.push(group[index])
+
+                    //сортировка чтобы все где больше 1 штуки ушло вниз
+                    // отключено 26.07.2020
+                    // if (group[index].groups.length == 1) {
+                    //     sort_len.unshift(group[index])
+                    // } else {
+                    //     sort_len.push(group[index])
+                    // }
 
                 }
+
+                //сортируем второй уровень
+
+                sort_len = sort_len.sort((a, b) => {
+                    if (a.name > b.name) return 1
+                    return 0
+                })
+
+                //сортируем третий уровень
+                for(let i; i < sort_len.length; i++) {
+                    sort_len[i].groups = sort_len[i].groups.sort((a, b) => {
+                        if (a.equipment.name > b.equipment.name) return 1
+                        return 0
+                    })
+                }
+
+
 
                 return sort_len
             },
@@ -559,6 +584,16 @@
 
 
                 })
+            },
+            // функция для сортировки ключей объекта
+            customSort(obj, lastkey) {
+                let res = {};
+                Object.keys(obj).sort(function(a, b) {
+                    return a == lastkey ? true : b == lastkey ? false : a > b;
+                }).forEach(function(key) {
+                    res[key] = obj[key];
+                });
+                return res;
             }
         },
         computed: {
@@ -580,6 +615,13 @@
 
                     groups[index] = this.groupName(groups[index])
                 }
+
+
+
+                //сортируем третий уровень
+                groups = this.customSort(groups, '');
+
+
 
 
                 return groups
@@ -605,12 +647,18 @@
                     })
 
                 }
+                filtred = filtred.sort((a, b) => {
+                    if (a.equipment.name > b.equipment.name) return 1
+                    return 0
+                });
+
 
                 return filtred
             },
             added_equipments() {
                 let filtred = this.inventory.InventoryItems
                     .filter(item => item.cause == 2)
+
 
                 return filtred
             },
@@ -631,7 +679,7 @@
                     return (item.status == true && item.cause == 1)
                 }).length
 
-            }
+            },
         }
     }
 </script >

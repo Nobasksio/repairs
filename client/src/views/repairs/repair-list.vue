@@ -104,7 +104,7 @@
                 :items="filter_equipments"
                 :page.sync="page"
                 :items-per-page="itemsPerPage"
-                hide-default-footer
+                :options="{itemsPerPage:50}"
                 class="elevation-1 "
                 @page-count="pageCount = $event"
         >
@@ -122,6 +122,9 @@
             </template >
             <template v-slot:item.date_finish="{ item }" >
                 {{ date_format(item.date_finish)}}
+            </template >
+            <template v-slot:item.equipment_price="{ item }" >
+                {{ (getEquipment(item.equipment_id)).price }}
             </template >
             <template v-slot:item.warranty="{ item }">
                 {{ item.isWarranty ? 'да': 'Нет'}}
@@ -177,9 +180,10 @@
                     { text: 'Подразделение', value: 'department' },
                     { text: 'Дата начала', value: 'date_start' },
                     { text: 'Поставщик', value: 'provider_id' },
-                    { text: 'Сумма', value: 'price' },
+                    { text: 'Стоимость ремонта', value: 'price' },
+                    { text: 'Цена оборудования', value: 'equipment_price' },
                     { text: 'Гарантийный', value: 'warranty' },
-                    { text: 'Actions', value: 'action', sortable: false,align: 'center', },
+                    { text: 'Actions', value: 'action', sortable: false, align: 'center', },
                 ],
                 providers:[],
                 repair: [],

@@ -30,6 +30,7 @@ class InventoryController {
         await inventory.loadMany({
             InventoryItems: (builder) => {
                 builder.where('isDelete', false)
+                    .orderBy('name', 'ask')
             }
         })
 
