@@ -165,6 +165,11 @@
                             go_to="inventory"
                             :want_delete_id="inventory.id"
                     ></deleteButton >
+                    <v-btn v-if="inventory.isClose"
+                           @click="downLoad()"
+                    >
+                        Скачать
+                    </v-btn >
                 </div >
 
                 <v-footer
@@ -422,6 +427,7 @@
     import baseGetters from '../../mixins/base-getters'
     import deleteButton from '../delete-button'
     import {mapState, mapMutations, mapActions} from 'vuex';
+    import {json2excel, excel2json} from 'js2excel';
 
     export default {
         name: "inventory",
@@ -465,6 +471,57 @@
         methods: {
             ...mapActions('inventory', ['getINventory', 'uploadInventory', 'updateItemStatus', 'updateInventoryNameGroupStatus']),
             ...mapMutations('inventory', ['setInventoryClose']),
+            downLoad() {
+
+                const list = this.groupSet;
+                const listKeys = Object.keys(list)
+                console.log(list);
+                const exportList = [];
+                listKeys.forEach((item) => {
+                    for (let i = 0; i < list[item].length; i += 1) {
+
+                        const thereIsEquipment = list[item][i].groups.filter((itemEq)=>{
+                            return itemEq.status === 1 || itemEq.status === true;
+                        })
+
+                        const deltaItem = list[item][i].groups.length - thereIsEquipment.length;
+                        const price = list[item][i].groups[0].equipment.price;
+                        const row = {
+                            'Название': list[item][i].name,
+                            'Книжное кол-во шт': list[item][i].groups.length,
+                            'Фактическое кол-во шт': thereIsEquipment.length,
+                            'Категория': item,
+                            'Цена': price,
+                            'Разница в колличестве шт': deltaItem,
+                            'Разница в сумме р': deltaItem * price,
+                            'Комментарий': ''
+                        };
+
+                        exportList.push(row);
+                    }
+                });
+
+                try {
+                    json2excel({
+                        data: exportList,
+                        name: 'user-info-data',
+                        formateDate: 'yyyy/mm/dd'
+                    });
+                } catch (e) {
+                    console.error('export error');
+                }
+
+// for webpack 3: dynamic import
+                import(/* webpackChunkName: "js2excel" */ 'js2excel').then(({json2excel}) => {
+                    json2excel({
+                        data,
+                        name: 'test',
+                        formateDate: 'dd/mm/yyyy'
+                    });
+                }).catch((e) => {
+
+                });
+            },
             toogle_group(name_arr) {
                 this.updateInventoryNameGroupStatus(name_arr)
             },
@@ -531,13 +588,12 @@
                 })
 
                 //сортируем третий уровень
-                for(let i; i < sort_len.length; i++) {
+                for (let i; i < sort_len.length; i++) {
                     sort_len[i].groups = sort_len[i].groups.sort((a, b) => {
                         if (a.equipment.name > b.equipment.name) return 1
                         return 0
                     })
                 }
-
 
 
                 return sort_len
@@ -588,9 +644,9 @@
             // функция для сортировки ключей объекта
             customSort(obj, lastkey) {
                 let res = {};
-                Object.keys(obj).sort(function(a, b) {
+                Object.keys(obj).sort(function (a, b) {
                     return a == lastkey ? true : b == lastkey ? false : a > b;
-                }).forEach(function(key) {
+                }).forEach(function (key) {
                     res[key] = obj[key];
                 });
                 return res;
@@ -617,11 +673,8 @@
                 }
 
 
-
                 //сортируем третий уровень
                 groups = this.customSort(groups, '');
-
-
 
 
                 return groups

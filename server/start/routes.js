@@ -77,3 +77,4 @@ Route.post('/api/addInventoryItem','InventoryController.addInventoryItem')
 
 Route.post('/api/antrekot','AntrekotController.create')
 Route.post('/api/tochka','TochkaController.create')
+Route.post('/api/phome','PhomeController.create')
