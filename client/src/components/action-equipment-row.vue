@@ -49,6 +49,13 @@
                         >
                             Удалить
                         </v-btn >
+                        <v-btn
+                                v-if="action === 'outOfOrder'"
+                                @click="goToOutOfOrder()"
+                                class="mx-4"
+                        >
+                            Списать
+                        </v-btn >
                     </v-col >
                 </v-row >
             </v-card-text >
@@ -75,6 +82,10 @@
                         text: 'Напечатать штрихкод',
                         action: 'print'
                     },
+                    {
+                        text: 'Списать',
+                        action: 'outOfOrder'
+                    },
                     // {
                     //     text: 'Удалить',
                     //     action: 'delete'
@@ -95,6 +106,10 @@
             go_to_delete() {
                 this.$router.push({name: 'packetDelete', params: {equipments: this.selected}})
             },
+            goToOutOfOrder() {
+                this.$router.push({name: 'listOutOfOrder', params: {equipments: this.selected}})
+            },
+
         },
         ...mapState('lists', ['choosedEquimpment']),
 

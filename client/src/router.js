@@ -55,6 +55,7 @@ export default new Router({
           ]
       },
       {path: '/barcodes/', name:"barcode", component: () => import('./views/barcode-print.vue'),props:true},
+      {path: '/list-out-of-order/', name:"listOutOfOrder", component: () => import('./views/list-out-of-order.vue'),props:true},
       {
           path: '/login',
           name: 'login',
