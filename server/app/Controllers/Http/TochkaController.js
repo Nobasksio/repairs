@@ -4,6 +4,28 @@ const Mail = use('Mail')
 class TochkaController {
 
 
+    async createRait({ request }){
+
+        const rait = request.all().rait;
+        const ip = request.ips()
+
+        let list = `
+        Оценка: ${rait}
+    
+        `;
+        const send = await Mail.raw(list, (message) => {
+            message
+                .to('aapo@rest38.ru')
+                .from('order@antrekotbar.ru')
+                .subject('Оценка Суши точка')
+        })
+
+        console.log(list)
+
+        return 'спасибо'
+
+    }
+
     async create ({ request }) {
 
         const order = request.all().order

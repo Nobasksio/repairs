@@ -9,7 +9,7 @@ class AntrekotController {
         const order = request.all().order
         const products =this.makeProductString(request.all().products)
         let earlyText = '';
-        const emailTo = 'a420673@yandex.ru';
+        const emailTo = 'delivery@pho-me.ru';
         let payment = 'Тип оплаты: наличные';
 
         if (order.payment === '2') {
@@ -23,6 +23,8 @@ class AntrekotController {
         Имя: ${order.name}
         Телефон: ${order.phone}
         ${payment}
+        Промокод: ${order.promocode}
+        Приборов: ${order.forks}
         Адрес: ${order.address} кв. ${order.apartment}
         Время: ${order.time} ${earlyText}\n
         Заказ:
